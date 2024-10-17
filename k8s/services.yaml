@@ -1,0 +1,116 @@
+# Traefik Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik
+spec:
+  selector:
+    app: traefik
+  ports:
+    - protocol: TCP
+      name: http
+      port: 80
+      targetPort: 8000
+    - protocol: TCP
+      name: admin
+      port: 8080
+    - protocol: TCP
+      name: monitor
+      port: 3000
+  type: LoadBalancer
+---
+# Traefik metrics Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik-metrics
+spec:
+  selector:
+    app: traefik
+  ports:
+    - protocol: TCP
+      name: metric
+      port: 8082
+---
+# Frontend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+---
+# Backend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+  type: ClusterIP
+---
+# MySQL Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+spec:
+  selector:
+    app: mysql
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
+  type: ClusterIP
+---
+# Adminer Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: adminer-service
+spec:
+  selector:
+    app: adminer
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
+---
+# Prometheus Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-service
+spec:
+  selector:
+    app: prometheus
+  ports:
+    - protocol: TCP
+      port: 9090
+      targetPort: 9090
+  type: ClusterIP
+---
+# Grafana Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-service
+spec:
+  selector:
+    app: grafana
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+  type: ClusterIP

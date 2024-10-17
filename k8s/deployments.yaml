@@ -1,0 +1,258 @@
+# Traefik ServiceAccount
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: traefik-ingress-controller
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  namespace: default
+  name: traefik
+  labels:
+    app: traefik
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traefik
+  template:
+    metadata:
+      labels:
+        app: traefik
+    spec:
+      serviceAccountName: traefik-ingress-controller
+      containers:
+        - name: traefik
+          image: traefik:v3.0
+          args:
+            - --api.insecure=true
+            - --providers.kubernetescrd
+            - --providers.kubernetesingress
+            - --metrics.prometheus=true
+            - --entryPoints.http.address=:8000
+            - --entryPoints.http.asDefault=true
+            - --entryPoints.metrics.address=:8082
+            - --metrics.prometheus.entryPoint=metrics
+            - --entryPoints.monitor.address=:3000
+          ports:
+            - name: http
+              containerPort: 8000
+            - name: admin
+              containerPort: 8080
+            - name: metric
+              containerPort: 8082
+            - name: monitor
+              containerPort: 3000
+---
+# Frontend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: ghcr.io/bruce0919/meal-provider-frontend:latest
+        ports:
+        - containerPort: 3000
+---
+# Backend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: ghcr.io/bruce0919/meal-provider-backend:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: DATABASE_URL
+          value: mysql://user:password@db:3306/mydatabase
+---
+# MySQL Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.4.0
+        ports:
+        - containerPort: 3306
+        # command: ["--init-file", "/docker-entrypoint-initdb.d/init.sql"]
+        env:
+        - name: MYSQL_DATABASE
+          value: mydatabase
+        - name: MYSQL_USER
+          value: user
+        - name: MYSQL_PASSWORD
+          value: password
+        - name: MYSQL_ROOT_PASSWORD
+          value: password
+        volumeMounts:
+        - name: mysql-storage
+          mountPath: /var/lib/mysql
+        - name: mysql-init
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: mysql-init
+        configMap:
+          name: mysql-init
+      - name: mysql-storage
+        persistentVolumeClaim:
+          claimName: mysql-pvc
+---
+# Adminer Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adminer-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adminer
+  template:
+    metadata:
+      labels:
+        app: adminer
+    spec:
+      containers:
+      - name: adminer
+        image: adminer:latest
+        ports:
+        - containerPort: 8080
+---
+# Prometheus Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      securityContext:
+        fsGroup: 472
+        runAsUser: 472
+        runAsGroup: 472
+        supplementalGroups:
+          - 0
+      containers:
+      - name: prometheus
+        image: prom/prometheus:v2.52.0
+        command: 
+        - "/bin/prometheus"
+        args: 
+        - "--config.file=/etc/prometheus/prometheus.yml"
+        - "--storage.tsdb.path=/prometheus"
+        ports:
+        - containerPort: 9090
+        volumeMounts:
+        - name: prometheus-storage
+          mountPath: /prometheus
+        - name: prometheus-config
+          mountPath: /etc/prometheus
+      volumes:
+      - name: prometheus-storage
+        persistentVolumeClaim:
+          claimName: prometheus-pvc
+      - name: prometheus-config
+        configMap:
+          name: prometheus-config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: grafana
+  name: grafana-deployment
+spec:
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      securityContext:
+        fsGroup: 472
+        runAsUser: 472
+        runAsGroup: 472
+        supplementalGroups:
+          - 0
+      containers:
+        - name: grafana
+          image: grafana/grafana:9.3.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+              name: http-grafana
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /robots.txt
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 2
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 3000
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 250m
+              memory: 750Mi
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: grafana-pv
+      volumes:
+        - name: grafana-pv
+          persistentVolumeClaim:
+            claimName: grafana-pvc
