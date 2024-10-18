@@ -12,108 +12,76 @@ DROP TABLE IF EXISTS Order_Dish;
 DROP TABLE IF EXISTS Orders;
 DROP TABLE IF EXISTS Review;
 
-CREATE TABLE Staff_Info (
-    StaffID BIGINT PRIMARY KEY,
-    StaffName VARCHAR(255),
-    Position VARCHAR(255),
-    Gmail VARCHAR(255),
-    Password VARCHAR(255),
-    PhoneNumber VARCHAR(20),
-    Paid BOOLEAN
+CREATE TABLE Employee (
+    Employee_ID VARCHAR(10) PRIMARY KEY NOT NULL,
+    First_Name VARCHAR(50) NOT NULL,
+    Last_Name VARCHAR(50) NOT NULL,
+    Date_Of_Birth DATE,
+    Hire_Date DATE NOT NULL,
+    Termination_Date DATE,
+    Status ENUM('Active', 'Terminated') NOT NULL
 );
 
-CREATE TABLE Dish_Info(
-    DishID BIGINT PRIMARY KEY AUTO_INCREMENT,
-    RestaurantID BIGINT,
-    Name VARCHAR(255),
-    Description VARCHAR(1000),
-    Combo BOOLEAN,
-    Picture VARCHAR(255),
-    Price INT,
-    Available BOOLEAN,
-    TimesOfOrder INT,
-    RatingCnt INT,
-    Rating FLOAT
+CREATE TABLE Training_Certifications (
+    Employee_ID VARCHAR(10) NOT NULL,
+    Training_Name VARCHAR(100) NOT NULL,
+    Completion_Date DATE NOT NULL,
+    Expire_Date DATE,
+    FOREIGN KEY (Employee_ID) REFERENCES Employee(Employee_ID),
+    PRIMARY KEY (Employee_ID, Training_Name, Completion_Date)
 );
 
-CREATE TABLE Restaurant_Info (
-    RestaurantID BIGINT PRIMARY KEY AUTO_INCREMENT,
-    RestaurantName VARCHAR(255),
-    PhoneNumber VARCHAR(20),
-    OpenTime TIME,
-    CloseTime TIME,
-    Description VARCHAR(1000),
-    Picture VARCHAR(255),
-    RatingCnt INT,
-    Rating FLOAT
+CREATE TABLE Performance_Reviews (
+    Employee_ID VARCHAR(10) NOT NULL,
+    Review_Date DATE NOT NULL,
+    Reviewer_ID VARCHAR(10) NOT NULL,
+    Performance_Score DECIMAL(4,2) NOT NULL,
+    Feedback TEXT,
+    PRIMARY KEY (Employee_ID, Review_Date),
+    FOREIGN KEY (Employee_ID) REFERENCES Employee(Employee_ID),
+    FOREIGN KEY (Reviewer_ID) REFERENCES Employee(Employee_ID)
 );
 
-CREATE TABLE Order_Dish(
-    SerialID BIGINT PRIMARY KEY AUTO_INCREMENT,
-    OrderID BIGINT,
-    DishID BIGINT,
-    Number INT
+CREATE TABLE Awards (
+    Employee_ID VARCHAR(10) NOT NULL,
+    Award_Name VARCHAR(100) NOT NULL,
+    Award_Description TEXT,
+    Award_Date DATE NOT NULL,
+    PRIMARY KEY (Employee_ID, Award_Name, Award_Date),
+    FOREIGN KEY (Employee_ID) REFERENCES Employee(Employee_ID)
 );
 
-CREATE TABLE Orders (
-    OrderID BIGINT PRIMARY KEY AUTO_INCREMENT,
-    CustomerID BIGINT,
-    RestaurantID BIGINT,
-    TotalPrice INT,
-    OrderTime TIMESTAMP,
-    Finish BOOLEAN,
-    Reviewed BOOLEAN
+CREATE TABLE Skills (
+    Employee_ID VARCHAR(10) NOT NULL,
+    Skill_Name VARCHAR(100) NOT NULL,
+    Skill_Level ENUM('Beginner', 'Intermediate', 'Advanced', 'Expert') NOT NULL,
+    PRIMARY KEY (Employee_ID, Skill_Name),
+    FOREIGN KEY (Employee_ID) REFERENCES Employee(Employee_ID)
 );
 
-CREATE TABLE Review(
-    SerialID BIGINT PRIMARY KEY AUTO_INCREMENT,
-    OrderID BIGINT,
-    CustomerID BIGINT,
-    DishID BIGINT, -- DishID = 0 means review the whole restaurant
-    Rating BIGINT,
-    Time TIMESTAMP
+CREATE TABLE Disciplinary_Records (
+    Employee_ID VARCHAR(10) NOT NULL,
+    Incident_Date DATE NOT NULL,
+    Incident_Type ENUM('Verbal Warning', 'Written Warning', 'Suspension', 'Termination') NOT NULL,
+    Incident_Description TEXT,
+    Disciplinary_Action_Taken VARCHAR(100) NOT NULL,
+    Disciplinary_Action_Date DATE NOT NULL,
+    PRIMARY KEY (Employee_ID, Incident_Date),
+    FOREIGN KEY (Employee_ID) REFERENCES Employee(Employee_ID)
 );
 
-INSERT INTO Staff_Info (StaffID, StaffName, Position, Gmail, Password, PhoneNumber, Paid) VALUES
-    (100001, 'ycy.yo', 'restaurant_1', 'ycy.yo@gmail.com', 'test', '0909090909', FALSE),
-    (100002, 'amber chen', 'admin', 'hello@world', 'test', '0910101010', FALSE),
-    (100003, 'whoami', 'restaurant_2', 'who@ami', 'test', '0911111111', FALSE),
-    (100004, 'benson', 'worker', 'benson@gmail.com', 'test', '0912345678', FALSE),
-    (100005, 'detaomega', 'worker', 'detaomega@gmail.com', 'test', '0912345678', FALSE),
-    (100006, 'BruceLin', 'worker', 'bruce@gmail.com', 'test', '0943134344', FALSE);
+INSERT into Employee(Employee_ID, First_Name, Last_Name, Date_Of_Birth, Hire_Date, Termination_Date, Status) VALUES
+    ('100001', 'adam', 'zheng', '2000-01-01', '2024-01-01', NULL, 'Active'),
+    ('100002', 'detaomega', 'Yang', '2000-01-01', '2024-01-01', NULL, 'Active'),
+    ('100003', 'supervisor', 'supervisor', '2000-01-01', '2024-01-01', NULL, 'Active');
 
-INSERT INTO Dish_Info (RestaurantID, Name, Description, Combo, Picture, Price, Available, TimesOfOrder, RatingCnt, Rating) VALUES
-    (1, 'Fried Chicken', 'Delicious', FALSE, 'chicken.jpg', 200, TRUE, 1, 0, 0),
-    (1, 'Hamburger', 'Delicious', FALSE, 'chicken.jpg', 150, TRUE, 1, 0, 0),
-    (1, 'French Fries', 'Delicious', FALSE, 'chicken.jpg', 100, TRUE, 0, 0, 0),
-    (1, 'Six Nuggets with Coke', 'Delicious', TRUE, 'chicken.jpg', 150, TRUE, 0, 0, 0),
-    (2, 'Cookie', 'Delicious', FALSE, 'chicken.jpg', 30, TRUE, 1, 1, 5),
-    (2, 'Veggie Delite', 'Delicious', FALSE, 'chicken.jpg', 150, FALSE, 0, 0, 0),
-    (2, 'Tuna', 'Delicious', FALSE, 'chicken.jpg', 170, TRUE, 0, 0, 0),
-    (3, 'Pepperoni Pizza', 'Delicious', FALSE, 'chicken.jpg', 200, TRUE, 1, 1, 3),
-    (3, 'Hawaiian Pizza', 'Delicious', FALSE, 'chicken.jpg', 150, TRUE, 2, 1, 4),
-    (3, 'Cheese Pizza', 'Delicious', FALSE, 'chicken.jpg', 100, FALSE, 0, 0, 0);
+INSERT INTO Training_Certifications (Employee_ID, Training_Name, Completion_Date, Expire_Date) VALUES
+    ('100001', 'Git & Github', '2024-01-01', '2025-01-01'),
+    ('100002', 'SQL', '2024-01-01', '2025-01-01');
 
-INSERT INTO Restaurant_Info  (RestaurantName, PhoneNumber, OpenTime, CloseTime, Description, Picture, RatingCnt, Rating) VALUES
-    ('KFC', '0912345678', '12:00:00', '22:00:00', 'Fast Food Restaurant', 'kfc.png', 0, 0),
-    ('Subway', '0912345678', '08:00:00', '22:00:00', 'Sandwich', 'kfc.png', 1, 5),
-    ('Pizza Hut', '0912345678', '08:00:00', '22:00:00', 'Pizza', 'kfc.png', 1, 4);
+INSERT INTO Performance_Reviews (Employee_ID, Review_Date, Reviewer_ID, Performance_Score, Feedback) VALUES
+    ('100001', '2024-01-01', '100003', 4.5, 'Good job'),
+    ('100002', '2024-01-01', '100003', 4.5, 'Good job');
 
-INSERT INTO Order_Dish (OrderID, DishID, Number) VALUES
-    (1, 1, 1),
-    (1, 2, 1),
-    (2, 5, 1),
-    (3, 8, 1),
-    (3, 9, 2);
-
-INSERT INTO Orders (CustomerID, RestaurantID, TotalPrice, OrderTime, Finish, Reviewed) VALUES
-    (100003, 1, 350, CURRENT_TIMESTAMP, FALSE, FALSE),
-    (100006, 2, 30, '2024-06-01 12:00:00', TRUE, TRUE),
-    (100005, 3, 500, '2024-06-01 20:00:00', TRUE, TRUE);
-
-INSERT INTO Review (OrderID, CustomerID, DishID, Rating, Time) VALUES
-    (3, 100005, 8, 3, '2024-06-01 21:00:00'),
-    (3, 100005, 9, 4, '2024-06-01 21:00:00'),
-    (3, 100005, 0, 4, '2024-06-01 21:00:00'),
-    (2, 100006, 5, 5, '2024-06-01 15:00:00'),
-    (2, 100006, 0, 5, '2024-06-01 15:00:00');
+INSERT INTO Awards (Employee_ID, Award_Name, Award_Description, Award_Date) VALUES
+    ('100001', 'Employee of the Month', 'Good job', '2024-01-01'),
