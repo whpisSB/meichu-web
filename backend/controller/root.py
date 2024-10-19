@@ -6,6 +6,34 @@ from model.models import Training_Certifications
 from model.models import Pr
 from model.models import db
 from model.models import Reward
+from model.models import User_Rewards
+from model.models import TSMC_User
+
+#################### GEN AI ####################
+import random
+import torch
+import numpy as np
+from PIL import Image
+import intel_extension_for_pytorch as ipex
+from diffusers import StableDiffusionPipeline, DDIMScheduler
+
+scheduler = DDIMScheduler.from_pretrained(
+    "somq/fantassified_icons_v2", subfolder="scheduler"
+)
+pipe = StableDiffusionPipeline.from_pretrained("somq/fantassified_icons_v2").to("cpu")
+
+# optimize with IPEX
+pipe.unet = ipex.optimize(pipe.unet.eval(), dtype=torch.bfloat16, inplace=True)
+# pipe.vae = ipex.optimize(pipe.vae.eval(), dtype=torch.bfloat16, inplace=True)
+# pipe.text_encoder = ipex.optimize(
+#     pipe.text_encoder.eval(), dtype=torch.bfloat16, inplace=True
+# )
+# pipe.safety_checker = ipex.optimize(
+#     pipe.safety_checker.eval(), dtype=torch.bfloat16, inplace=True
+# )
+# pipe.set_progress_bar_config(disable=True)
+
+################################################
 
 NOTIFY_DATE = 5
 
@@ -97,10 +125,79 @@ def get_reward():
     reward_list = []
     for r in reward:
         reward_list.append({
-            'RewardID': r.RewardID,
-            'Title': r.Title,
-            'ThumbnailImage': r.ThumbnailImage,
-            'Dhumbnail_image': r.Dhumbnail_image,
-            'Points': r.Points
+            'reward_id': r.RewardID,
+            'title': r.Title,
+            'thumbnail_image': r.ThumbnailImage,
+            'description': r.Description,
+            'points': r.Points
         })
     return jsonify(reward_list)
+
+def exchange_reward():
+    data = request.get_json()
+    line_id = data['line_id']
+    reward_id = data['reward_id']
+
+    # Get the user and reward from the database
+    user = TSMC_User.query.filter_by(Line_ID=line_id).first()
+    reward = Reward.query.get(reward_id)
+
+    if not user or not reward:
+        return jsonify({'message': 'User or reward not found'}), 404
+
+    # Check if user has enough points
+    if user.Points < reward.Points:
+        return jsonify({'message': 'Not enough points'}), 400
+
+    # Deduct points from user
+    user.Points -= reward.Points
+
+    # Create new user_reward entry
+    user_reward = User_Rewards(Line_ID=line_id, RewardID=reward_id)
+    
+    # Add changes to session
+    db.session.add(user_reward)
+    db.session.add(user)
+    
+    try:
+        # Commit the changes
+        db.session.commit()
+        return jsonify({
+            'message': 'success',
+            'remaining_points': user.Points,
+            'reward_title': reward.Title,
+            'points_deducted': reward.Points
+        })
+    except Exception as e:
+        # If there's an error, rollback the changes
+        db.session.rollback()
+        return jsonify({'message': 'error', 'error': str(e)}), 500
+    
+
+def icon():
+    # pass
+    data = request.get_json()
+    prompt = data['prompt']
+    #!!!!!!!!!!!!!!!!!!TO DO!!!!!!!!!!!!!!!!!!!!
+
+    seed = random.randint(0, 1_000_000)
+    guide = random.uniform(7.5, 10.0)
+    gen = torch.Generator().manual_seed(seed)
+
+    with torch.cpu.amp.autocast(enabled=True, dtype=torch.bfloat16):
+        images = pipe(
+            prompt,
+            num_images_per_prompt=1,
+            num_inference_steps=25,
+            guidance_scale=guide,
+            generator=gen,
+        ).images[0].resize((64, 64), Image.LANCZOS)
+
+    np_image = np.array(images)
+    if np_image.sum() == 0:
+        return jsonify({'message': 'NSFW'}), 400    # if the image is NSFW, return 400
+
+    return jsonify({'icon': np_image.tolist()})
+
+    # return jsonify({'icon': 'https://google.com'})
+    

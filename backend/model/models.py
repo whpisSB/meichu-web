@@ -38,7 +38,7 @@ class Pr(db.Model):
     Additions = db.Column(db.Integer)
     Deletions = db.Column(db.Integer)
     Total = db.Column(db.Integer)
-    Summary = db.Column(db.String(1024))
+    Summary = db.Column(db.String(10240))
     Reviewers = db.Column(db.String(255))
 
     def __repr__(self):
@@ -50,11 +50,29 @@ class Reward(db.Model):
     RewardID = db.Column(db.Integer, primary_key=True)
     Title = db.Column(db.String(255))
     ThumbnailImage = db.Column(db.String(1024))
-    Dhumbnail_image = db.Column(db.String(1024))
+    Description = db.Column(db.String(1024))
     Points = db.Column(db.Integer)
 
     def __repr__(self):
         return f"<Reward {self.RewardID}>"
+
+class User_Rewards(db.Model):
+    __tablename__ = 'User_Rewards'
+
+    ID = db.Column(db.Integer, primary_key=True)
+    Line_ID = db.Column(db.String(255))
+    RewardID = db.Column(db.Integer)
+
+    def __repr__(self):
+        return f"<User_Rewards {self.ID}>"
+
+class TSMC_User(db.Model):
+    __tablename__ = 'TSMC_User'
+    Employee_ID = db.Column(db.Integer, primary_key=True)
+    Name = db.Column(db.String(255))
+    Email = db.Column(db.String(255))
+    Line_ID = db.Column(db.String(255))
+    Points = db.Column(db.Integer)
 
 class Dish_Info(db.Model):
     __tablename__ = 'Dish_Info'

@@ -76,6 +76,14 @@ CREATE TABLE Review(
     Time TIMESTAMP
 );
 
+CREATE TABLE TSMC_User (
+    Employee_ID BIGINT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(255),
+    Email VARCHAR(255),
+    Line_ID VARCHAR(255),
+    Points INT
+);
+
 CREATE TABLE Training_Certifications (
     Employee_ID BIGINT PRIMARY KEY AUTO_INCREMENT,
     Training_Name VARCHAR(50) ,
@@ -93,7 +101,7 @@ CREATE TABLE Pr (
     Additions INT,
     Deletions INT,
     Total INT,
-    Summary VARCHAR(1024),
+    Summary VARCHAR(10240),
     Reviewers VARCHAR(255)
 );
 
@@ -101,13 +109,36 @@ CREATE TABLE Reward(
     RewardID BIGINT PRIMARY KEY AUTO_INCREMENT,
     Title VARCHAR(255),
     ThumbnailImage VARCHAR(1024),
-    Dhumbnail_image VARCHAR(1024),
+    Description VARCHAR(1024),
     Points INT
 );
 
-INSERT INTO Reward (Title, ThumbnailImage, Dhumbnail_image, Points) VALUES
-    ('Keyboard', 'image1.jpg', 'image2.jpg', 100),
-    ('Apple Watch', 'https://www.google.com/search?q=apple+watch&sca_esv=f449c65ac19397c2&rlz=1C1ONGR_zh-TWTW1015TW1015&udm=2&biw=1536&bih=695&sxsrf=ADLYWIJdRPiu12GWkiZOc7zYgvFB1T7reQ%3A1729316694958&ei=VkcTZ6OZOvTH1e8Pg_SS2A4&oq=apple+&gs_lp=Egxnd3Mtd2l6LXNlcnAiBmFwcGxlICoCCAAyCBAAGIAEGLEDMgUQABiABDIIEAAYgAQYsQMyCBAAGIAEGLEDMgUQABiABDIFEAAYgAQyCBAAGIAEGLEDMggQABiABBixAzIFEAAYgAQyCBAAGIAEGLEDSL8ZUKQEWMIRcAJ4AJABAJgBNKABlQKqAQE2uAEByAEA-AEBmAIIoAKnAsICBBAjGCfCAgQQABgDwgIOEAAYgAQYsQMYgwEYigWYAwCIBgGSBwE4oAe4FQ&sclient=gws-wiz-serp#vhid=q1y4lg3Euy6kIM&vssid=mosaic', 'image4.jpg', 200);
+-- New table to link users and rewards
+CREATE TABLE User_Rewards (
+    ID BIGINT PRIMARY KEY AUTO_INCREMENT,
+    Line_ID VARCHAR(255),
+    RewardID BIGINT
+);
+
+CREATE TABLE Icon (
+    ID BIGINT PRIMARY KEY AUTO_INCREMENT,
+    Employee_ID BIGINT,
+    Icon VARCHAR(1024) -- An URL --
+);
+
+INSERT INTO Icon (Employee_ID, Icon) VALUES
+    (1, 'https://google.com');
+
+INSERT INTO User_Rewards (Line_ID, RewardID) VALUES
+    ("line_id_ycy", 1);
+
+INSERT INTO TSMC_User (Name, Email, Line_ID, Points) VALUES
+    ('ycy.yo', 'ycy.yo@gmail.com', "line_id_ycy", 200),
+    ('amber chen', 'amber@world', "line_id_amber", 200);
+
+INSERT INTO Reward (Title, ThumbnailImage, Description, Points) VALUES
+    ('Keyboard', 'https://i.imgur.com/5HBQx1m.jpeg', 'good keyboard', 100),
+    ('Apple Watch', 'https://i.imgur.com/ql0l1t5.jpeg', 'good watch', 200);
 
 INSERT INTO Training_Certifications (Employee_ID, Training_Name, Completion_Date, Expire_Date) VALUES
     ('100001', 'Git & Github', '2024-01-01', '2025-01-01'),
