@@ -2,6 +2,7 @@ FROM node:lts-alpine
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
+
 RUN npm install -g http-server
 RUN npm install -g pnpm@9.0.6 
 
@@ -12,12 +13,12 @@ COPY package*.json ./
 RUN pnpm install
 COPY . . 
 
-RUN pnpm run build
+#ENV NODE_OPTIONS="--max_old_space_size=8172"
+#RUN pnpm run dev
+#FROM docker.io/nginx:1.21.1-alpine
+#WORKDIR /www
+#COPY --from=0 /app/dist /www
 
-FROM docker.io/nginx:1.21.1-alpine
-WORKDIR /www
-COPY --from=0 /app/dist /www
-
-COPY conf.d/* /etc/nginx/conf.d/
-
+#COPY conf.d/* /etc/nginx/conf.d/
+CMD [ "pnpm", "run", "dev" ]
 EXPOSE 3000
