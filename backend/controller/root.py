@@ -1,6 +1,4 @@
 from flask import request, jsonify
-from model.models import Staff_Info
-from controller.user_auth import generate_token
 from datetime import datetime
 from model.models import Training_Certifications
 from model.models import Pr
@@ -10,29 +8,14 @@ from model.models import User_Rewards
 from model.models import TSMC_User
 
 #################### GEN AI ####################
-import random
-import torch
-import numpy as np
-from PIL import Image
-import intel_extension_for_pytorch as ipex
-from diffusers import StableDiffusionPipeline, DDIMScheduler
-
-scheduler = DDIMScheduler.from_pretrained(
-    "somq/fantassified_icons_v2", subfolder="scheduler"
-)
-pipe = StableDiffusionPipeline.from_pretrained("somq/fantassified_icons_v2").to("cpu")
-
-# optimize with IPEX
-pipe.unet = ipex.optimize(pipe.unet.eval(), dtype=torch.bfloat16, inplace=True)
-# pipe.vae = ipex.optimize(pipe.vae.eval(), dtype=torch.bfloat16, inplace=True)
-# pipe.text_encoder = ipex.optimize(
-#     pipe.text_encoder.eval(), dtype=torch.bfloat16, inplace=True
-# )
-# pipe.safety_checker = ipex.optimize(
-#     pipe.safety_checker.eval(), dtype=torch.bfloat16, inplace=True
-# )
-# pipe.set_progress_bar_config(disable=True)
-
+# import random
+# import torch
+# import numpy as np
+# import io
+# import base64
+# import intel_extension_for_pytorch as ipex
+# from PIL import Image
+# from diffusers import StableDiffusionPipeline, DDIMScheduler
 ################################################
 
 NOTIFY_DATE = 5
@@ -41,21 +24,11 @@ def login():
     account = request.get_json().get("user_account")
     password = request.get_json().get("user_password")
     # return jsonify({'user_account': account, 'user_password': password})
-    staff = Staff_Info.query.filter_by(Gmail=account, Password=password).first()
+    staff = TSMC_User.query.filter_by(Email=account, Password=password).first()
     if staff is None:
-        return jsonify({'outh_token': "", 'user_identity': "invalid_user"})
-    access_token = generate_token(staff.StaffID, staff.Position)
-    
-    today = datetime.now().day
-    notify = False
-    if not staff.Paid and today <= NOTIFY_DATE:
-        notify = True
-    
-    if staff.Position.find("restaurant") == -1:
-        return jsonify({'outh_token': access_token, 'user_identity': staff.Position, 'notify': notify})
+        return jsonify({"status" : "error"})
     else:
-        return jsonify({'outh_token': access_token, 'user_identity': "restaurant", 
-                        'notify': notify, 'restaurant_id': staff.Position.split('_')[1]})
+        return jsonify({"status" : "ok"})
 
 def ping():
     return jsonify({'message': 'pong'})
@@ -175,29 +148,72 @@ def exchange_reward():
     
 
 def icon():
-    # pass
-    data = request.get_json()
-    prompt = data['prompt']
-    #!!!!!!!!!!!!!!!!!!TO DO!!!!!!!!!!!!!!!!!!!!
+    pass
+    # data = request.get_json()
+    # prompt = data['prompt']
+    # #!!!!!!!!!!!!!!!!!!TO DO!!!!!!!!!!!!!!!!!!!!
 
-    seed = random.randint(0, 1_000_000)
-    guide = random.uniform(7.5, 10.0)
-    gen = torch.Generator().manual_seed(seed)
+    # scheduler = DDIMScheduler.from_pretrained(
+    #     "somq/fantassified_icons_v2", subfolder="scheduler"
+    # )
+    # pipe = StableDiffusionPipeline.from_pretrained("somq/fantassified_icons_v2").to("cpu")
 
-    with torch.cpu.amp.autocast(enabled=True, dtype=torch.bfloat16):
-        images = pipe(
-            prompt,
-            num_images_per_prompt=1,
-            num_inference_steps=25,
-            guidance_scale=guide,
-            generator=gen,
-        ).images[0].resize((64, 64), Image.LANCZOS)
+    # # optimize with IPEX
+    # pipe.unet = ipex.optimize(pipe.unet.eval(), dtype=torch.bfloat16, inplace=True)
+    # pipe.vae = ipex.optimize(pipe.vae.eval(), dtype=torch.bfloat16, inplace=True)
+    # pipe.text_encoder = ipex.optimize(
+    #     pipe.text_encoder.eval(), dtype=torch.bfloat16, inplace=True
+    # )
+    # pipe.safety_checker = ipex.optimize(
+    #     pipe.safety_checker.eval(), dtype=torch.bfloat16, inplace=True
+    # )
+    # pipe.set_progress_bar_config(disable=True)
 
-    np_image = np.array(images)
-    if np_image.sum() == 0:
-        return jsonify({'message': 'NSFW'}), 400    # if the image is NSFW, return 400
+    # return jsonify({'message': 'success'})  
 
-    return jsonify({'icon': np_image.tolist()})
+    # seed = random.randint(0, 1_000_000)
+    # guide = random.uniform(7.5, 10.0)
+    # gen = torch.Generator().manual_seed(seed)
+
+    # with torch.cpu.amp.autocast(enabled=True, dtype=torch.bfloat16):
+    #     images = pipe(
+    #         prompt,
+    #         num_images_per_prompt=1,
+    #         num_inference_steps=25,
+    #         guidance_scale=guide,
+    #         generator=gen,
+    #     ).images[0].resize((64, 64), Image.LANCZOS)
+
+    # np_image = np.array(images)
+    # if np_image.sum() == 0:
+    #     return jsonify({'message': 'NSFW'}), 400    # if the image is NSFW, return 400
+
+    # buffered = io.BytesIO()
+    # images.save(buffered, format="JPEG")  # 指定格式
+    # encoded_image = base64.b64encode(buffered.getvalue()).decode('utf-8')
+
+    # return jsonify({'icon': encoded_image})
 
     # return jsonify({'icon': 'https://google.com'})
+
+def get_user_rewards():
+    data = request.get_json()
+    line_id = data['line_id']
     
+    # Get all reward IDs for the user
+    user_rewards = User_Rewards.query.filter_by(Line_ID=line_id).all()
+    reward_ids = [ur.RewardID for ur in user_rewards]
+    
+    # Fetch reward details from the Reward table
+    rewards = Reward.query.filter(Reward.RewardID.in_(reward_ids)).all()
+    
+    response = []
+    for reward in rewards:
+        response.append({
+            'reward_id': reward.RewardID,
+            'title': reward.Title,
+            'thumbnail_image': reward.ThumbnailImage,
+            'description': reward.Description
+        })
+    
+    return jsonify(response)

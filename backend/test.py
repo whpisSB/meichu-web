@@ -1,6 +1,6 @@
 import requests
 
-url = "http://140.112.251.50:5000/icon"
+url = "http://140.112.251.50:5000/user_rewards"
 
 # payload = {
 #     "user_account": "ycy.yo@gmail.com",
@@ -19,11 +19,11 @@ url = "http://140.112.251.50:5000/icon"
 # }
 
 payload = {
-    "line_id": "line_id_amber",
-    "reward_id": 2
+    "line_id": "Ua0e4d2058f68cfb9c16953c29bac8399"
 }
-
-response = requests.post(url, json=payload)
+#/user_rewards?line_id=Ua0e4d2058f68cfb9c16953c29bac8399
+#                      Ua0e4d2058f68cfb9c16953c29bac8399
+response = requests.get(url,json=payload)
 # response = requests.get("http://140.112.251.50:5000/ping")
 response.raise_for_status()
 print(response.json())

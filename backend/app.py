@@ -2,7 +2,7 @@ from flask import Flask, jsonify
 from model.models import db
 import atexit
 from datetime import datetime
-from route.routes import bp_root, bp_main, bp_pos, bp_admin
+from route.routes import bp_root
 from controller.admin import reset_paid_flag
 from flask_jwt_extended import JWTManager
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -22,9 +22,6 @@ def create_app():
     atexit.register(lambda: scheduler.shutdown())
 
     app.register_blueprint(bp_root, url_prefix='')  
-    app.register_blueprint(bp_main, url_prefix='/main')
-    app.register_blueprint(bp_pos, url_prefix='/pos')
-    app.register_blueprint(bp_admin, url_prefix='/admin')
     return app
 
 app = create_app()

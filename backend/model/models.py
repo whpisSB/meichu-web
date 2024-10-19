@@ -3,19 +3,15 @@ import datetime
 
 db = SQLAlchemy()
 
-class Staff_Info(db.Model):
-    __tablename__ = 'Staff_Info'
-
-    StaffID = db.Column(db.Integer, primary_key=True)
-    StaffName = db.Column(db.String(255))
-    Position = db.Column(db.String(255))
-    Gmail = db.Column(db.String(255))
+class TSMC_User(db.Model):
+    __tablename__ = 'TSMC_User'
+    Employee_ID = db.Column(db.Integer, primary_key=True)
+    Name = db.Column(db.String(255))
+    Github_ID = db.Column(db.String(255))
+    Email = db.Column(db.String(255))
     Password = db.Column(db.String(255))
-    PhoneNumber = db.Column(db.Integer)
-    Paid = db.Column(db.Boolean)
-
-    def __repr__(self):
-        return f"<Staff_Information {self.StaffID}>"
+    Line_ID = db.Column(db.String(512))
+    Points = db.Column(db.Integer)
 
 class Training_Certifications(db.Model):
     __tablename__ = 'Training_Certifications'
@@ -60,19 +56,11 @@ class User_Rewards(db.Model):
     __tablename__ = 'User_Rewards'
 
     ID = db.Column(db.Integer, primary_key=True)
-    Line_ID = db.Column(db.String(255))
+    Line_ID = db.Column(db.String(512))
     RewardID = db.Column(db.Integer)
 
     def __repr__(self):
         return f"<User_Rewards {self.ID}>"
-
-class TSMC_User(db.Model):
-    __tablename__ = 'TSMC_User'
-    Employee_ID = db.Column(db.Integer, primary_key=True)
-    Name = db.Column(db.String(255))
-    Email = db.Column(db.String(255))
-    Line_ID = db.Column(db.String(255))
-    Points = db.Column(db.Integer)
 
 class Dish_Info(db.Model):
     __tablename__ = 'Dish_Info'
@@ -145,3 +133,17 @@ class Review(db.Model):
 
     def __repr__(self):
         return f"<Review {self.ReviewID}>"
+
+class Staff_Info(db.Model):
+    __tablename__ = 'Staff_Info'
+
+    StaffID = db.Column(db.Integer, primary_key=True)
+    StaffName = db.Column(db.String(255))
+    Position = db.Column(db.String(255))
+    Gmail = db.Column(db.String(255))
+    Password = db.Column(db.String(255))
+    PhoneNumber = db.Column(db.Integer)
+    Paid = db.Column(db.Boolean)
+
+    def __repr__(self):
+        return f"<Staff_Information {self.StaffID}>"
