@@ -5,6 +5,8 @@ from datetime import datetime
 from model.models import Training_Certifications
 from model.models import Pr
 from model.models import db
+from model.models import Reward
+
 NOTIFY_DATE = 5
 
 def login():
@@ -89,3 +91,16 @@ def update_pr():
     except Exception as e:
         # db.session.rollback()
         return jsonify({'message': 'error', 'error': str(e)}), 500
+    
+def get_reward():
+    reward = Reward.query.all()
+    reward_list = []
+    for r in reward:
+        reward_list.append({
+            'RewardID': r.RewardID,
+            'Title': r.Title,
+            'ThumbnailImage': r.ThumbnailImage,
+            'Dhumbnail_image': r.Dhumbnail_image,
+            'Points': r.Points
+        })
+    return jsonify(reward_list)

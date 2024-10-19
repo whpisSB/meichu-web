@@ -38,11 +38,23 @@ class Pr(db.Model):
     Additions = db.Column(db.Integer)
     Deletions = db.Column(db.Integer)
     Total = db.Column(db.Integer)
-    Summary = db.Column(db.String(255))
+    Summary = db.Column(db.String(1024))
     Reviewers = db.Column(db.String(255))
 
     def __repr__(self):
         return f"<Pr {self.PrID}>"
+
+class Reward(db.Model):
+    __tablename__ = 'Reward'
+
+    RewardID = db.Column(db.Integer, primary_key=True)
+    Title = db.Column(db.String(255))
+    ThumbnailImage = db.Column(db.String(1024))
+    Dhumbnail_image = db.Column(db.String(1024))
+    Points = db.Column(db.Integer)
+
+    def __repr__(self):
+        return f"<Reward {self.RewardID}>"
 
 class Dish_Info(db.Model):
     __tablename__ = 'Dish_Info'

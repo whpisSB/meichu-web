@@ -93,9 +93,21 @@ CREATE TABLE Pr (
     Additions INT,
     Deletions INT,
     Total INT,
-    Summary VARCHAR(255),
+    Summary VARCHAR(1024),
     Reviewers VARCHAR(255)
 );
+
+CREATE TABLE Reward(
+    RewardID BIGINT PRIMARY KEY AUTO_INCREMENT,
+    Title VARCHAR(255),
+    ThumbnailImage VARCHAR(1024),
+    Dhumbnail_image VARCHAR(1024),
+    Points INT
+);
+
+INSERT INTO Reward (Title, ThumbnailImage, Dhumbnail_image, Points) VALUES
+    ('Keyboard', 'image1.jpg', 'image2.jpg', 100),
+    ('Apple Watch', 'https://www.google.com/search?q=apple+watch&sca_esv=f449c65ac19397c2&rlz=1C1ONGR_zh-TWTW1015TW1015&udm=2&biw=1536&bih=695&sxsrf=ADLYWIJdRPiu12GWkiZOc7zYgvFB1T7reQ%3A1729316694958&ei=VkcTZ6OZOvTH1e8Pg_SS2A4&oq=apple+&gs_lp=Egxnd3Mtd2l6LXNlcnAiBmFwcGxlICoCCAAyCBAAGIAEGLEDMgUQABiABDIIEAAYgAQYsQMyCBAAGIAEGLEDMgUQABiABDIFEAAYgAQyCBAAGIAEGLEDMggQABiABBixAzIFEAAYgAQyCBAAGIAEGLEDSL8ZUKQEWMIRcAJ4AJABAJgBNKABlQKqAQE2uAEByAEA-AEBmAIIoAKnAsICBBAjGCfCAgQQABgDwgIOEAAYgAQYsQMYgwEYigWYAwCIBgGSBwE4oAe4FQ&sclient=gws-wiz-serp#vhid=q1y4lg3Euy6kIM&vssid=mosaic', 'image4.jpg', 200);
 
 INSERT INTO Training_Certifications (Employee_ID, Training_Name, Completion_Date, Expire_Date) VALUES
     ('100001', 'Git & Github', '2024-01-01', '2025-01-01'),
