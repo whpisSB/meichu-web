@@ -45,9 +45,9 @@ def login():
     # return jsonify({'user_account': account, 'user_password': password})
     staff = TSMC_User.query.filter_by(Email=account, Password=password).first()
     if staff is None:
-        return jsonify({"status" : "error"}),500
+        return jsonify({"status" : "error"}), 500
     else:
-        return jsonify({"status" : "ok"}),200
+        return jsonify({"status" : "ok"}), 200
 
 def ping():
     return jsonify({'message': 'pong'})
@@ -253,3 +253,32 @@ def review_result():
     except Exception as e:
         # db.session.rollback()
         return jsonify({'message': 'error', 'error': str(e)}), 500
+
+
+def review_history():
+    data = request.get_json()
+    user_line_id = data['line_id']
+    print(user_line_id)
+    user = TSMC_User.query.filter_by(Line_ID=user_line_id).first()
+
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+
+    github_id = user.Github_ID
+    
+    reviews = Review.query.filter_by(AuthorGithubID=github_id).all()
+
+    history = [{"total_points": user.Points}]
+
+    for review in reviews:
+        review_data = {
+            'pr_url': review.PRUrl,
+            'reviewer_github_id': review.ReviewerGithubID,
+            'points': review.Points,
+            'review_at': review.ReviewAt.strftime('%Y-%m-%d %H:%M:%S')
+        }
+        history.append(review_data)
+
+    return jsonify(history), 200
+
+    
