@@ -124,12 +124,12 @@ class Orders(db.Model):
 class Review(db.Model):
     __tablename__ = 'Review'
 
-    SerialID = db.Column(db.Integer, primary_key=True)
-    OrderID = db.Column(db.Integer)
-    CustomerID = db.Column(db.Integer)
-    DishID = db.Column(db.Integer)
-    Rating = db.Column(db.Integer)
-    Time = db.Column(db.DateTime)
+    ReviewID = db.Column(db.Integer, primary_key=True)
+    AuthorGithubID = db.Column(db.String(255))
+    PRUrl = db.Column(db.String(255))
+    ReviewerGithubID = db.Column(db.String(255))
+    Points = db.Column(db.Integer)
+    ReviewAt = db.Column(db.DateTime)
 
     def __repr__(self):
         return f"<Review {self.ReviewID}>"

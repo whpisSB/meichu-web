@@ -6,19 +6,37 @@ from model.models import db
 from model.models import Reward
 from model.models import User_Rewards
 from model.models import TSMC_User
+from model.models import Review
+import requests
 
 #################### GEN AI ####################
 # import random
 # import torch
 # import numpy as np
-# import io
-# import base64
-# import intel_extension_for_pytorch as ipex
 # from PIL import Image
+# import intel_extension_for_pytorch as ipex
 # from diffusers import StableDiffusionPipeline, DDIMScheduler
+
+# scheduler = DDIMScheduler.from_pretrained(
+#     "somq/fantassified_icons_v2", subfolder="scheduler"
+# )
+# pipe = StableDiffusionPipeline.from_pretrained("somq/fantassified_icons_v2").to("cpu")
+
+# # optimize with IPEX
+# pipe.unet = ipex.optimize(pipe.unet.eval(), dtype=torch.bfloat16, inplace=True)
+# # pipe.vae = ipex.optimize(pipe.vae.eval(), dtype=torch.bfloat16, inplace=True)
+# pipe.text_encoder = ipex.optimize(
+#     pipe.text_encoder.eval(), dtype=torch.bfloat16, inplace=True
+# )
+# pipe.safety_checker = ipex.optimize(
+#     pipe.safety_checker.eval(), dtype=torch.bfloat16, inplace=True
+# )
+# pipe.set_progress_bar_config(disable=True)
+
 ################################################
 
 NOTIFY_DATE = 5
+LINE_SERVER_ENDPOINT = "https://dog-heroic-seal.ngrok-free.app"
 
 def login():
     account = request.get_json().get("user_account")
@@ -59,39 +77,19 @@ def get_training_certifications():
 
 def update_pr():
     data = request.get_json()
+    print(data)
+    reviewer = TSMC_User.query.filter_by(Github_ID=data['reviewer_id']).first()
+
+    if reviewer is None:
+        return jsonify({'message': 'Reviewer not found'}), 404
+
+    data['reviewer_id'] = reviewer.Line_ID
+    res = requests.post(f'{LINE_SERVER_ENDPOINT}/review', json=data)
+
+    if res.status_code != 200:
+        return jsonify({'message': 'error', 'error': res.text}), 500
     
-    # Check if data is a single dictionary or a list of dictionaries
-    if isinstance(data, dict):
-        data = [data]  # Convert single dict to list for consistent processing
-    
-    return_list = []
-    for repo in data:
-        pr = Pr(
-            RepositoryID=repo['RepositoryID'],
-            GithubID=repo['GithubID'],
-            CommitCount=repo['CommitCount'],
-            Additions=repo['Additions'],
-            Deletions=repo['Deletions'],
-            Total=repo['Total'],
-            Summary=repo['Summary'],
-            Reviewers=repo['Reviewers']
-        )
-        db.session.add(pr)
-        return_list.append(repo['RepositoryID'])
-        return_list.append(repo['GithubID'])
-        return_list.append(repo['CommitCount'])
-        return_list.append(repo['Additions'])
-        return_list.append(repo['Deletions'])
-        return_list.append(repo['Total'])
-        return_list.append(repo['Summary'])
-        return_list.append(repo['Reviewers'])
-    
-    try:
-        db.session.commit()
-        return jsonify({'message': 'success', 'payload': return_list}), 200
-    except Exception as e:
-        # db.session.rollback()
-        return jsonify({'message': 'error', 'error': str(e)}), 500
+    return jsonify({'message': 'success'}), 200
     
 def get_reward():
     reward = Reward.query.all()
@@ -235,3 +233,31 @@ def get_user_info():
         'points': user.Points
     })
 
+def review_result():
+    data = request.get_json()
+    author_github_id = data['author_id']
+    pr_url = data['pr_url']
+    reviewer_line_id = data['reviewer_id']
+    result = int(data['result'])
+
+    author = TSMC_User.query.filter_by(Github_ID=author_github_id).first()
+    author.Points += result
+    db.session.add(author)
+
+    reviewer_github_id = TSMC_User.query.filter_by(Line_ID=reviewer_line_id).first().Github_ID
+    review = Review(
+        AuthorGithubID=author_github_id,
+        PRUrl=pr_url,
+        ReviewerGithubID=reviewer_github_id,
+        Points=result,
+        ReviewAt=datetime.now()
+    )
+
+    db.session.add(review)
+    
+    try:
+        db.session.commit()
+        return jsonify({'message': 'success'}), 200
+    except Exception as e:
+        # db.session.rollback()
+        return jsonify({'message': 'error', 'error': str(e)}), 500

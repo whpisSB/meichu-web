@@ -14,8 +14,8 @@ DROP TABLE IF EXISTS Icon;
 
 CREATE TABLE TSMC_User (
     Employee_ID BIGINT PRIMARY KEY AUTO_INCREMENT,
-    Name VARCHAR(255),
     Github_ID VARCHAR(255),
+    Name VARCHAR(255),
     Email VARCHAR(255),
     Password VARCHAR(255),
     Line_ID VARCHAR(512),
@@ -64,6 +64,16 @@ CREATE TABLE Icon (
     Icon VARCHAR(1024) -- An URL --
 );
 
+CREATE TABLE Review(
+    ReviewID BIGINT PRIMARY KEY AUTO_INCREMENT,
+    AuthorGithubID VARCHAR(255),
+    PRUrl VARCHAR(255),
+    ReviewerGithubID VARCHAR(255), -- DishID = 0 means review the whole restaurant
+    Points BIGINT,
+    ReviewAt TIMESTAMP
+);
+
+
 INSERT INTO Icon (Employee_ID, Icon) VALUES
     (1, 'https://google.com');
 
@@ -74,10 +84,9 @@ INSERT INTO User_Rewards (Line_ID, RewardID) VALUES
     ("Ua0e4d2058f68cfb9c16953c29bac8399", 1),
     ("Ua0e4d2058f68cfb9c16953c29bac8399", 2);
 
-INSERT INTO TSMC_User (Name, Github_ID, Email, Password, Line_ID, Points) VALUES
-    ('ycy.yo', 'ycy.yo', 'ycy.yo@gmail.com', 'password', "line_id_ycy", 200),
-    ('amber chen', 'amber', 'amber@world', 'password', "line_id_amber", 200),
-    ('weiling','weiling','aaa','password','Ua0e4d2058f68cfb9c16953c29bac8399',20000);
+INSERT INTO TSMC_User (Name, Github_ID, Email, Line_ID, Points) VALUES
+    ('ycy.yo', 'TTC-CCF', 'ycy.yo@gmail.com', "U6d7b420fec2d8fc88fdc073603990788", 200),
+    ('amber chen', 'weiling920131', 'amber@world', "Ua0e4d2058f68cfb9c16953c29bac8399", 200);
 
 INSERT INTO Reward (Title, ThumbnailImage, Description, Points) VALUES
     ('Keyboard', 'https://i.imgur.com/5HBQx1m.jpeg', 'good keyboard', 100),
