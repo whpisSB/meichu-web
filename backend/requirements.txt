@@ -19,12 +19,11 @@ cryptography
 psutil
 requests
 
-# numpy==1.24.1
-# Pillow
-# -f https://download.pytorch.org/whl/cpu/torch_stable.html
-# torch==2.0.1+cpu
-# accelerate==0.21.0
-# diffusers==0.21.0
-# transformers==4.36.0
-# huggingface-hub==0.25.2
-# intel_extension_for_pytorch==2.0.0
+numpy==1.24.1
+Pillow
+-f https://download.pytorch.org/whl/cpu/torch_stable.html
+torch==2.0.1+cpu
+accelerate==0.21.0
+diffusers==0.21.0
+transformers==4.36.0
+huggingface-hub==0.25.2

@@ -4,3 +4,4 @@ testcase.txt
 .pytest_cache/
 .coverage
 coverage*.*
+icon_model/

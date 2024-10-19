@@ -10,12 +10,13 @@ from model.models import Review
 import requests
 
 #################### GEN AI ####################
-# import random
-# import torch
-# import numpy as np
-# from PIL import Image
-# import intel_extension_for_pytorch as ipex
-# from diffusers import StableDiffusionPipeline, DDIMScheduler
+import random
+import torch
+import io
+import base64
+import numpy as np
+from PIL import Image
+from diffusers import StableDiffusionPipeline
 
 # scheduler = DDIMScheduler.from_pretrained(
 #     "somq/fantassified_icons_v2", subfolder="scheduler"
@@ -44,9 +45,9 @@ def login():
     # return jsonify({'user_account': account, 'user_password': password})
     staff = TSMC_User.query.filter_by(Email=account, Password=password).first()
     if staff is None:
-        return jsonify({"status" : "error"})
+        return jsonify({"status" : "error"}),500
     else:
-        return jsonify({"status" : "ok"})
+        return jsonify({"status" : "ok"}),200
 
 def ping():
     return jsonify({'message': 'pong'})
@@ -146,53 +147,44 @@ def exchange_reward():
     
 
 def icon():
-    pass
-    # data = request.get_json()
-    # prompt = data['prompt']
-    # #!!!!!!!!!!!!!!!!!!TO DO!!!!!!!!!!!!!!!!!!!!
+    # pass
+    data = request.get_json()
+    prompt = data['prompt']
+    #!!!!!!!!!!!!!!!!!!TO DO!!!!!!!!!!!!!!!!!!!!
 
-    # scheduler = DDIMScheduler.from_pretrained(
-    #     "somq/fantassified_icons_v2", subfolder="scheduler"
-    # )
-    # pipe = StableDiffusionPipeline.from_pretrained("somq/fantassified_icons_v2").to("cpu")
+    return jsonify({'url': 'http://140.112.251.50:5000/static/cover/kfc.png'})
 
-    # # optimize with IPEX
-    # pipe.unet = ipex.optimize(pipe.unet.eval(), dtype=torch.bfloat16, inplace=True)
-    # pipe.vae = ipex.optimize(pipe.vae.eval(), dtype=torch.bfloat16, inplace=True)
-    # pipe.text_encoder = ipex.optimize(
-    #     pipe.text_encoder.eval(), dtype=torch.bfloat16, inplace=True
-    # )
-    # pipe.safety_checker = ipex.optimize(
-    #     pipe.safety_checker.eval(), dtype=torch.bfloat16, inplace=True
-    # )
-    # pipe.set_progress_bar_config(disable=True)
+    pipe = StableDiffusionPipeline.from_pretrained(
+        "./icon_model",
+        use_safetensors=True,
+    ).to("cpu")
 
-    # return jsonify({'message': 'success'})  
+    seed = random.randint(0, 1_000_000)
+    guide = random.uniform(8.5, 12.0)
+    gen = torch.Generator().manual_seed(seed)
 
-    # seed = random.randint(0, 1_000_000)
-    # guide = random.uniform(7.5, 10.0)
-    # gen = torch.Generator().manual_seed(seed)
+    # with torch.cpu.amp.autocast(enabled=True, dtype=torch.float16):
+    images = pipe(
+        prompt,
+        num_images_per_prompt=1,
+        num_inference_steps=15,
+        guidance_scale=guide,
+        generator=gen,
+    ).images[0].resize((64, 64), Image.LANCZOS)
 
-    # with torch.cpu.amp.autocast(enabled=True, dtype=torch.bfloat16):
-    #     images = pipe(
-    #         prompt,
-    #         num_images_per_prompt=1,
-    #         num_inference_steps=25,
-    #         guidance_scale=guide,
-    #         generator=gen,
-    #     ).images[0].resize((64, 64), Image.LANCZOS)
+    images.save(f"./assets/icon.png")
 
-    # np_image = np.array(images)
-    # if np_image.sum() == 0:
-    #     return jsonify({'message': 'NSFW'}), 400    # if the image is NSFW, return 400
+    np_image = np.array(images)
+    if np_image.sum() == 0:
+        return jsonify({'message': 'NSFW'}), 400    # if the image is NSFW, return 400
 
-    # buffered = io.BytesIO()
-    # images.save(buffered, format="JPEG")  # 指定格式
-    # encoded_image = base64.b64encode(buffered.getvalue()).decode('utf-8')
+    buffered = io.BytesIO()
+    images.save(buffered, format="JPEG")
+    encoded_image = base64.b64encode(buffered.getvalue()).decode('utf-8')
 
-    # return jsonify({'icon': encoded_image})
+    return jsonify({'url': 'https://140.112.251.50:5000/assets/icon.png'})
+    # return jsonify({'icon': encoded_image, 'url': 'https://140.112.251.50:5000/assets/icon.png'})
 
-    # return jsonify({'icon': 'https://google.com'})
 
 def get_user_rewards():
     data = request.get_json()
