@@ -17,6 +17,33 @@ class Staff_Info(db.Model):
     def __repr__(self):
         return f"<Staff_Information {self.StaffID}>"
 
+class Training_Certifications(db.Model):
+    __tablename__ = 'Training_Certifications'
+
+    Employee_ID = db.Column(db.Integer, primary_key=True)
+    Training_Name = db.Column(db.String(255))
+    Completion_Date = db.Column(db.String(255))
+    Expire_Date = db.Column(db.String(255))
+
+    def __repr__(self):
+        return f"<Training_Certifications {self.Employee_ID}>"
+
+class Pr(db.Model):
+    __tablename__ = 'Pr'
+
+    PrID = db.Column(db.Integer, primary_key=True)
+    RepositoryID = db.Column(db.String(255))
+    GithubID = db.Column(db.String(255))
+    CommitCount = db.Column(db.Integer)
+    Additions = db.Column(db.Integer)
+    Deletions = db.Column(db.Integer)
+    Total = db.Column(db.Integer)
+    Summary = db.Column(db.String(255))
+    Reviewers = db.Column(db.String(255))
+
+    def __repr__(self):
+        return f"<Pr {self.PrID}>"
+
 class Dish_Info(db.Model):
     __tablename__ = 'Dish_Info'
 

@@ -1,5 +1,5 @@
 CREATE DATABASE IF NOT EXISTS mydatabase;
-DROP USER IF EXISTS 'user'@'%';
+-- DROP USER IF EXISTS 'user'@'%';
 CREATE USER 'user'@'%' IDENTIFIED BY 'password';
 GRANT ALL PRIVILEGES ON mydatabase.* TO 'user'@'%';
 FLUSH PRIVILEGES;
@@ -11,6 +11,7 @@ DROP TABLE IF EXISTS Restaurant_Info;
 DROP TABLE IF EXISTS Order_Dish;
 DROP TABLE IF EXISTS Orders;
 DROP TABLE IF EXISTS Review;
+DROP TABLE IF EXISTS Training_Certifications;
 
 CREATE TABLE Staff_Info (
     StaffID BIGINT PRIMARY KEY,
@@ -19,7 +20,8 @@ CREATE TABLE Staff_Info (
     Gmail VARCHAR(255),
     Password VARCHAR(255),
     PhoneNumber VARCHAR(20),
-    Paid BOOLEAN
+    Paid BOOLEAN,
+    Email VARCHAR(255)
 );
 
 CREATE TABLE Dish_Info(
@@ -73,6 +75,34 @@ CREATE TABLE Review(
     Rating BIGINT,
     Time TIMESTAMP
 );
+
+CREATE TABLE Training_Certifications (
+    Employee_ID BIGINT PRIMARY KEY AUTO_INCREMENT,
+    Training_Name VARCHAR(50) ,
+    Completion_Date VARCHAR(50) ,
+    Expire_Date VARCHAR(50) 
+    -- FOREIGN KEY (Employee_ID) REFERENCES Employee(Employee_ID),
+    -- PRIMARY KEY (Employee_ID, Training_Name, Completion_Date)
+);
+
+CREATE TABLE Pr (
+    PrID BIGINT PRIMARY KEY AUTO_INCREMENT,
+    RepositoryID VARCHAR(255),
+    GithubID VARCHAR(255),
+    CommitCount INT,
+    Additions INT,
+    Deletions INT,
+    Total INT,
+    Summary VARCHAR(255),
+    Reviewers VARCHAR(255)
+);
+
+INSERT INTO Training_Certifications (Employee_ID, Training_Name, Completion_Date, Expire_Date) VALUES
+    ('100001', 'Git & Github', '2024-01-01', '2025-01-01'),
+    ('100002', 'SQL', '2024-01-01', '2025-01-01');
+
+INSERT INTO Pr (RepositoryID, GithubID, CommitCount, Additions, Deletions, Total, Summary, Reviewers) VALUES
+    ('repo', 'ycy.yo', 10, 10, 10, 10, 'summary', 'reviewers');
 
 INSERT INTO Staff_Info (StaffID, StaffName, Position, Gmail, Password, PhoneNumber, Paid) VALUES
     (100001, 'ycy.yo', 'restaurant_1', 'ycy.yo@gmail.com', 'test', '0909090909', FALSE),

@@ -5,6 +5,19 @@ def test_ping(client):
     assert response.status_code == 200
     assert response.json['message'] == 'pong'
 
+def test_health_check(client):
+    response = client.get('/health_check')
+    assert response.status_code == 200
+    assert 'status' in response.json
+    assert response.json['status'] == 'ok'
+    assert 'timestamp' in response.json
+    assert 'cpu_usage' in response.json
+    assert 'memory_usage' in response.json
+
+    response = client.post('/health_check')
+    assert response.status_code == 200
+    assert response.json['message'] == 'Health check POST request received'
+    
 @pytest.mark.parametrize(
     "credential ,expected", [
         (
