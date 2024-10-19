@@ -152,7 +152,7 @@ def icon():
     prompt = data['prompt']
     #!!!!!!!!!!!!!!!!!!TO DO!!!!!!!!!!!!!!!!!!!!
 
-    return jsonify({'url': 'http://140.112.251.50:5000/static/cover/kfc.png'})
+    # return jsonify({'url': 'http://140.112.251.50:5000/static/cover/kfc.png'})
 
     pipe = StableDiffusionPipeline.from_pretrained(
         "./icon_model",
