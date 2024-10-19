@@ -8,6 +8,7 @@
 
   <div class="mx-auto bg-white">
     <div class="flex flex-col-reverse lg:flex-row">
+      <SideBar class="min-h-screen w-full justify-start shadow-lg lg:w-1/6"></SideBar>
       <RestaurantSidebar class="min-h-screen w-full justify-start shadow-lg lg:w-1/6"></RestaurantSidebar>
       <!-- left section -->
       <div class="w-full bg-gray-50 lg:w-4/6">
@@ -26,7 +27,7 @@
           >
             單點
           </button>
-
+          <el-button>test</el-button>
           <button
             @click="changeCategorie(true)"
             class="hover:border-yellow-450 mx-5 w-1/6 rounded-2xl border border-yellow-400 bg-yellow-200 px-10 py-1 hover:bg-white"
@@ -211,6 +212,7 @@
 </template>
 
 <script lang="ts" setup>
+import { ElButton } from 'element-plus'
 import { ref, computed, reactive, onMounted, watch } from 'vue'
 // import { ref, computed, reactive, onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
@@ -240,19 +242,17 @@ const showSuccessDialog = ref(false)
 const showErrorDialog = ref(false)
 const showSuccessAlert = ref(false)
 const showWarningDialog = ref(false)
-// const showSuccessAlert = ref(false)
-// const showWarningDialog = ref(false)
 
-onMounted(async () => {
-  const OuthResult = await userService.userCheckOuth()
-  if (OuthResult === false) {
-    alert('請重新登入')
-    router.push('/')
-  }
-  await getRestaurant()
-  meals.value = restaurantInfo.meals.filter((meal: any) => meal.combo === false)
-  console.log(restaurantInfo)
-})
+// onMounted(async () => {
+//   const OuthResult = await userService.userCheckOuth()
+//   if (OuthResult === false) {
+//     alert('請重新登入')
+//     router.push('/')
+//   }
+//   await getRestaurant()
+//   meals.value = restaurantInfo.meals.filter((meal: any) => meal.combo === false)
+//   console.log(restaurantInfo)
+// })
 const getRestaurant = async () => {
   const data = await restaurantService.getRestaurant(userInfo.value.outh_token)
   restaurantInfo.restaurant = data.restaurant

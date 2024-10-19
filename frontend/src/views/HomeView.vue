@@ -9,11 +9,11 @@
             <div class="mb-10">
               <h3 class="text-3xl font-extrabold">Sign in</h3>
               <p class="mt-4 text-sm">
-                Sign in to your account and explore a world of possibilities. Your journey begins here.
+                Sign in to your account and access the Employee reward system.
               </p>
             </div>
             <div>
-              <label class="mb-2 block text-sm">User Account</label>
+              <label class="mb-2 block text-sm">TSMC User Account</label>
               <div class="relative flex items-center">
                 <input
                   v-model="userInput.account"
@@ -44,7 +44,7 @@
                 <input
                   v-model="userInput.password"
                   name="password"
-                  type="password"
+                  :type="showPassword ? 'text' : 'password'"
                   required
                   class="w-full rounded-md border border-gray-300 px-4 py-3 text-sm outline-[#333]"
                   placeholder="Enter password"
@@ -55,10 +55,16 @@
                   stroke="#bbb"
                   class="absolute right-4 h-[18px] w-[18px] cursor-pointer"
                   viewBox="0 0 128 128"
+                  @click="togglePasswordVisibility"
                 >
                   <path
+                    v-if="!showPassword"
                     d="M64 104C22.127 104 1.367 67.496.504 65.943a4 4 0 0 1 0-3.887C1.367 60.504 22.127 24 64 24s62.633 36.504 63.496 38.057a4 4 0 0 1 0 3.887C126.633 67.496 105.873 104 64 104zM8.707 63.994C13.465 71.205 32.146 96 64 96c31.955 0 50.553-24.775 55.293-31.994C114.535 56.795 95.854 32 64 32 32.045 32 13.447 56.775 8.707 63.994zM64 88c-13.234 0-24-10.766-24-24s10.766-24 24-24 24 10.766 24 24-10.766 24-24 24zm0-40c-8.822 0-16 7.178-16 16s7.178 16 16 16 16-7.178 16-16-7.178-16-16-16z"
                     data-original="#000000"
+                  ></path>
+                  <path
+                    v-else
+                    d="M64,104c-41.873,0-62.633-36.504-63.496-38.057a4,4,0,0,1,0-3.887C1.367,60.504,22.127,24,64,24s62.633,36.504,63.496,38.057a4,4,0,0,1,0,3.887C126.633,67.496,105.873,104,64,104ZM8.707,63.994C13.465,71.205,32.146,96,64,96c31.955,0,50.553-24.775,55.293-31.994C114.535,56.795,95.854,32,64,32,32.045,32,13.447,56.775,8.707,63.994ZM64,88a24,24,0,1,1,24-24A24.028,24.028,0,0,1,64,88Zm0-40a16,16,0,1,0,16,16A16.019,16.019,0,0,0,64,48Z"
                   ></path>
                 </svg>
               </div>
@@ -100,7 +106,7 @@
             class="h-full w-full object-cover"
             alt="Dining Experience"
           />
-          <h1 class="mb-2 text-center text-4xl font-semibold">Welcome to TSMC Meal Provider</h1>
+          <h1 class="mb-2 text-center text-4xl font-semibold">Welcome to TSMC Employee Reward System</h1>
         </div>
       </div>
     </div>
@@ -120,24 +126,31 @@ const userInput = reactive({
   password: ''
 })
 
+const showPassword = ref(false)
+
 const submit = async () => {
-  const userInfo = await userService.userLogin(userInput.account, userInput.password)
-  console.log(userInfo)
-  if (userInfo.user_identity === 'invalid_user') {
-    loginStatus.value = 1
-  } else if (userInfo.user_identity === 'restaurant') {
-    userStore.setUserInfo(userInfo)
-    loginStatus.value = 0
-    router.push({ path: '/restaurant' })
-  } else if (userInfo.user_identity === 'admin') {
-    userStore.setUserInfo(userInfo)
-    loginStatus.value = 0
-    router.push({ path: '/admin' })
-  } else if (userInfo.user_identity === 'worker') {
-    userStore.setUserInfo(userInfo)
-    loginStatus.value = 0
-    router.push({ path: '/worker' })
-  }
+  // const userInfo = await userService.userLogin(userInput.account, userInput.password)
+  // console.log(userInfo)
+  router.push({ path: '/restaurant' })
+  // if (userInfo.user_identity === 'invalid_user') {
+  //   loginStatus.value = 1
+  // } else if (userInfo.user_identity === 'restaurant') {
+  //   userStore.setUserInfo(userInfo)
+  //   loginStatus.value = 0
+  //   router.push({ path: '/restaurant' })
+  // } else if (userInfo.user_identity === 'admin') {
+  //   userStore.setUserInfo(userInfo)
+  //   loginStatus.value = 0
+  //   router.push({ path: '/admin' })
+  // } else if (userInfo.user_identity === 'worker') {
+  //   userStore.setUserInfo(userInfo)
+  //   loginStatus.value = 0
+  //   router.push({ path: '/worker' })
+  // }
+}
+
+const togglePasswordVisibility = () => {
+  showPassword.value = !showPassword.value
 }
 </script>
 
