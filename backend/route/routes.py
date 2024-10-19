@@ -1,5 +1,5 @@
 from flask import Blueprint
-from controller.root import login, ping, health_check,get_training_certifications, update_pr, get_reward, exchange_reward, icon, get_user_rewards, get_user_info, review_result
+from controller.root import login, ping, health_check,get_training_certifications, update_pr, get_reward, exchange_reward, icon, get_user_rewards, get_user_info, review_result, review_history
 
 bp_root = Blueprint('bp_root', __name__)
 bp_main = Blueprint('bp_main', __name__)
@@ -18,3 +18,4 @@ bp_root.route('/icon', methods=['POST'])(icon)
 bp_root.route('/user_rewards', methods=['GET'])(get_user_rewards)
 bp_root.route('/user_info', methods=['GET'])(get_user_info)
 bp_root.route('/review', methods=['POST'])(review_result)
+bp_root.route('/review_history', methods=['GET'])(review_history)
