@@ -17,6 +17,7 @@ pytest-cov        ==5.0.0
 apscheduler==3.10.4
 cryptography
 psutil
+requests
 
 # numpy==1.24.1
 # Pillow
