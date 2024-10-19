@@ -44,9 +44,9 @@ def login():
     # return jsonify({'user_account': account, 'user_password': password})
     staff = TSMC_User.query.filter_by(Email=account, Password=password).first()
     if staff is None:
-        return jsonify({"status" : "error"})
+        return jsonify({"status" : "error"}), 500
     else:
-        return jsonify({"status" : "ok"})
+        return jsonify({"status" : "ok"}), 200
 
 def ping():
     return jsonify({'message': 'pong'})

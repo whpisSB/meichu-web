@@ -84,9 +84,9 @@ INSERT INTO User_Rewards (Line_ID, RewardID) VALUES
     ("Ua0e4d2058f68cfb9c16953c29bac8399", 1),
     ("Ua0e4d2058f68cfb9c16953c29bac8399", 2);
 
-INSERT INTO TSMC_User (Name, Github_ID, Email, Line_ID, Points) VALUES
-    ('ycy.yo', 'TTC-CCF', 'ycy.yo@gmail.com', "U6d7b420fec2d8fc88fdc073603990788", 200),
-    ('amber chen', 'weiling920131', 'amber@world', "Ua0e4d2058f68cfb9c16953c29bac8399", 200);
+INSERT INTO TSMC_User (Name, Github_ID, Email,Password ,Line_ID, Points) VALUES
+    ('ycy.yo', 'TTC-CCF', 'ycy.yo@gmail.com',"password" ,"U6d7b420fec2d8fc88fdc073603990788", 200),
+    ('amber chen', 'weiling920131', 'amber@world',"password" ,"Ua0e4d2058f68cfb9c16953c29bac8399", 200);
 
 INSERT INTO Reward (Title, ThumbnailImage, Description, Points) VALUES
     ('Keyboard', 'https://i.imgur.com/5HBQx1m.jpeg', 'good keyboard', 100),
