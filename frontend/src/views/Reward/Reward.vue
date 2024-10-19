@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { ref, reactive, unref, onMounted } from 'vue'
-import { ElLink, ElDivider, ElTag } from 'element-plus'
+import { ElLink, ElDivider, ElTag, ElDialog, ElInput, ElButton } from 'element-plus'
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Table, TableColumn } from '@/components/Table'
@@ -138,13 +138,26 @@ onMounted(async () => {
 //   }
 // ])
 
-const actionClick = (row?: any) => {
-  console.log(row)
+const actionClick = (item) => {
+  selectedItem.value = item
+  dialogVisible.value = true
 }
+
+const handleConfirm = () => {
+  // Here you can add the logic to add the item to the cart
+  console.log('Adding to cart:', selectedItem.value, 'Quantity:', quantity.value)
+  dialogVisible.value = false
+  quantity.value = 1
+}
+
+// Add these new refs
+const dialogVisible = ref(false)
+const selectedItem = ref(null)
+const quantity = ref(1)
 </script>
 
 <template>
-  <ContentWrap title="商品清單">
+  <ContentWrap :title="t('reward.rewardList')">
     <Table
       :columns="columns"
       :data="tableDataList"
@@ -171,25 +184,25 @@ const actionClick = (row?: any) => {
       <template #content-footer="item">
         <div>
           <div class="flex-1 text-center" @click="() => actionClick(item)">
-            <ElLink :underline="false">加入購物車</ElLink>
+            <ElLink :underline="false">{{ t('reward.buyNow') }}</ElLink>
           </div>
         </div>
       </template>
     </Table>
   </ContentWrap>
-  <!-- <ContentWrap title="購物車清單">
-    <Table
-      v-model:pageSize="pageSize"
-      v-model:currentPage="currentPage"
-      :columns="columns"
-      :data="dataList"
-      row-key="id"
-      :loading="loading"
-      sortable
-      :pagination="{
-        total: total
-      }"
-      @register="tableRegister"
-    />
-  </ContentWrap> -->
+
+  <!-- Add this dialog component -->
+  <ElDialog v-model="dialogVisible" title="確認購買" width="30%">
+    <div v-if="selectedItem">
+      <p>{{ selectedItem.title }}</p>
+      <p>價格: {{ selectedItem.points }}P</p>
+      <ElInput v-model="quantity" type="number" :min="1" placeholder="數量"></ElInput>
+    </div>
+    <template #footer>
+      <span class="dialog-footer">
+        <ElButton @click="dialogVisible = false">取消</ElButton>
+        <ElButton type="primary" @click="handleConfirm">確認</ElButton>
+      </span>
+    </template>
+  </ElDialog>
 </template>

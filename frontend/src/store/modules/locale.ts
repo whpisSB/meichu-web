@@ -27,7 +27,7 @@ export const useLocaleStore = defineStore('locales', {
       localeMap: [
         {
           lang: 'zh-CN',
-          name: '简体中文'
+          name: '繁體中文'
         },
         {
           lang: 'en',

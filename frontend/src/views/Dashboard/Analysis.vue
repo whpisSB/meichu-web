@@ -65,6 +65,8 @@ const lineOptionsData = reactive<EChartsOption>(lineOptions) as EChartsOption
 // 每月销售总额
 const getMonthlySales = async () => {
   const res = [
+    { actual: 99, name: 'analysis.november' },
+    { actual: 123, name: 'analysis.december' },
     { actual: 120, name: 'analysis.january' },
     { actual: 82, name: 'analysis.february' },
     { actual: 91, name: 'analysis.march' },
@@ -74,9 +76,7 @@ const getMonthlySales = async () => {
     { actual: 145, name: 'analysis.july' },
     { actual: 250, name: 'analysis.august' },
     { actual: 134, name: 'analysis.september' },
-    { actual: 56, name: 'analysis.october' },
-    { actual: 99, name: 'analysis.november' },
-    { actual: 123, name: 'analysis.december' }
+    { actual: 56, name: 'analysis.october' }
   ]
   set(
     lineOptionsData,

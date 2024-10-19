@@ -1,4 +1,8 @@
 export default {
+  reward: {
+    buyNow: '立即購買',
+    rewardList: '獎品清單'
+  },
   common: {
     inputText: '請輸入',
     selectText: '請選擇',

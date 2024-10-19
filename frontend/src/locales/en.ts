@@ -1,4 +1,8 @@
 export default {
+  reward: {
+    buyNow: 'Buy Now',
+    rewardList: 'Reward List'
+  },
   common: {
     inputText: 'Please input',
     selectText: 'Please select',
