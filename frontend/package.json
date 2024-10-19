@@ -9,7 +9,7 @@
     "i": "pnpm install",
     "dev": "pnpm vite --mode base",
     "ts:check": "pnpm vue-tsc --noEmit --skipLibCheck",
-    "build": "pnpm vite build --mode pro",
+    "build": "set \"VITE_CJS_TRACE=true\" && pnpm vite build --mode pro",
     "build:gitee": "pnpm vite build --mode gitee",
     "build:dev": "pnpm vite build --mode dev",
     "build:test": "pnpm vite build --mode test",
@@ -122,10 +122,10 @@
     "vite-plugin-url-copy": "^1.1.4",
     "vue-tsc": "^2.0.26"
   },
-  "packageManager": "pnpm@9.0.6",
+  "packageManager": "pnpm@8.1.0",
   "engines": {
     "node": ">=18.0.0",
-    "pnpm": ">=9.0.6"
+    "pnpm": ">=8.1.0"
   },
   "license": "MIT",
   "repository": {

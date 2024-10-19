@@ -64,7 +64,7 @@ const saveAvatar = async () => {
       </div>
       <ElDivider />
       <div class="flex justify-between items-center">
-        <div>账号：</div>
+        <div>帳號：</div>
         <div>{{ userInfo?.username }}</div>
       </div>
       <ElDivider />
