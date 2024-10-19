@@ -1,12 +1,14 @@
 <script setup lang="tsx">
-import { ref, reactive, unref } from 'vue'
+import { ref, reactive, unref, onMounted } from 'vue'
 import { ElLink, ElDivider, ElTag } from 'element-plus'
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Table, TableColumn } from '@/components/Table'
 import { BaseButton } from '@/components/Button'
+import rewardServce from '@/api/reward/rewardService'
 import { useTable } from '@/hooks/web/useTable'
 import { getTreeTableListApi } from '@/api/table'
+import { rewardItemType } from '@/api/reward/types'
 
 // const { tableRegister, tableState } = useTable({
 //   fetchDataApi: async () => {
@@ -98,38 +100,43 @@ interface Params {
 
 const loading = ref(false)
 
-const tableDataList = ref<any[]>([
-  {
-    logo: 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
-    name: 'Alipay',
-    desc: '餅乾'
-  },
-  {
-    logo: 'https://gw.alipayobjects.com/zos/rmsportal/zOsKZmFRdUtvpqCImOVY.png',
-    name: 'Angular',
-    desc: '飲料'
-  },
-  {
-    logo: 'https://gw.alipayobjects.com/zos/rmsportal/siCrBXXhmvTQGWPNLBow.png',
-    name: 'Bootstrap',
-    desc: '在中台产品的研发过程中，会出现不同的设计规范和实现方式，但其中往往存在很多类似的页面和组件，这些类似的组件会被抽离成一套标准规范。'
-  },
-  {
-    logo: 'https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png',
-    name: 'React',
-    desc: '在中台产品的研发过程中，会出现不同的设计规范和实现方式，但其中往往存在很多类似的页面和组件，这些类似的组件会被抽离成一套标准规范。'
-  },
-  {
-    logo: 'https://gw.alipayobjects.com/zos/rmsportal/ComBAopevLwENQdKWiIn.png',
-    name: 'Vue',
-    desc: '在中台产品的研发过程中，会出现不同的设计规范和实现方式，但其中往往存在很多类似的页面和组件，这些类似的组件会被抽离成一套标准规范。'
-  },
-  {
-    logo: 'https://gw.alipayobjects.com/zos/rmsportal/nxkuOJlFJuAUhzlMTCEe.png',
-    name: 'Webpack',
-    desc: '在中台产品的研发过程中，会出现不同的设计规范和实现方式，但其中往往存在很多类似的页面和组件，这些类似的组件会被抽离成一套标准规范。'
-  }
-])
+const tableDataList = ref<rewardItemType[]>([])
+onMounted(async () => {
+  console.log('onMounted')
+  tableDataList.value = await rewardServce.getRewardApi()
+})
+// const tableDataList = ref<any[]>([
+//   {
+//     logo: 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
+//     name: 'Alipay',
+//     desc: '餅乾'
+//   },
+//   {
+//     logo: 'https://gw.alipayobjects.com/zos/rmsportal/zOsKZmFRdUtvpqCImOVY.png',
+//     name: 'Angular',
+//     desc: '飲料'
+//   },
+//   {
+//     logo: 'https://gw.alipayobjects.com/zos/rmsportal/siCrBXXhmvTQGWPNLBow.png',
+//     name: 'Bootstrap',
+//     desc: '在中台产品的研发过程中，会出现不同的设计规范和实现方式，但其中往往存在很多类似的页面和组件，这些类似的组件会被抽离成一套标准规范。'
+//   },
+//   {
+//     logo: 'https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png',
+//     name: 'React',
+//     desc: '在中台产品的研发过程中，会出现不同的设计规范和实现方式，但其中往往存在很多类似的页面和组件，这些类似的组件会被抽离成一套标准规范。'
+//   },
+//   {
+//     logo: 'https://gw.alipayobjects.com/zos/rmsportal/ComBAopevLwENQdKWiIn.png',
+//     name: 'Vue',
+//     desc: '在中台产品的研发过程中，会出现不同的设计规范和实现方式，但其中往往存在很多类似的页面和组件，这些类似的组件会被抽离成一套标准规范。'
+//   },
+//   {
+//     logo: 'https://gw.alipayobjects.com/zos/rmsportal/nxkuOJlFJuAUhzlMTCEe.png',
+//     name: 'Webpack',
+//     desc: '在中台产品的研发过程中，会出现不同的设计规范和实现方式，但其中往往存在很多类似的页面和组件，这些类似的组件会被抽离成一套标准规范。'
+//   }
+// ])
 
 const actionClick = (row?: any) => {
   console.log(row)
@@ -139,25 +146,26 @@ const actionClick = (row?: any) => {
 <template>
   <ContentWrap title="商品清單">
     <Table
-      :columns="[]"
+      :columns="columns"
       :data="tableDataList"
       :loading="loading"
       custom-content
       :card-wrap-style="{
-        width: '400px',
+        width: '300px',
         marginBottom: '20px',
         marginRight: '20px'
       }"
     >
       <template #content="row">
-        <div class="flex cursor-pointer">
-          <div class="pr-16px">
-            <img :src="row.logo" class="w-48px h-48px rounded-[50%]" alt="" />
+        <div class="flex flex-col cursor-pointer">
+          <div class="flex justify-between mb-2">
+            <div class="font-bold text-lg">{{ row.title }}</div>
+            <div class="font-bold text-lg text-green-600">{{ row.points }}P</div>
           </div>
-          <div>
-            <div class="mb-12px font-700 font-size-16px">{{ row.name }}</div>
-            <div class="line-clamp-3 font-size-12px">{{ row.desc }}</div>
+          <div class="flex justify-center mb-2">
+            <img :src="row.thumbnail_image" class="w-48 h-48 object-cover rounded" alt="" />
           </div>
+          <div class="text-sm mb-2">{{ row.description }}</div>
         </div>
       </template>
       <template #content-footer="item">

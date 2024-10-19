@@ -113,15 +113,15 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     ]
   },
   {
-    path: '/guide',
+    path: '/reward',
     component: Layout,
-    name: 'Guide',
+    name: 'reward',
     meta: {},
     children: [
       {
         path: 'index',
-        component: () => import('@/views/Guide/Guide.vue'),
-        name: 'GuideDemo',
+        component: () => import('@/views/Reward/Reward.vue'),
+        name: 'rewardHomePgge',
         meta: {
           title: t('router.guide'),
           icon: 'vi-cib:telegram-plane'

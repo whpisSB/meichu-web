@@ -257,15 +257,15 @@ const adminList = [
     ]
   },
   {
-    path: '/product',
+    path: '/reward',
     component: '#',
     name: '購物車',
     meta: {},
     children: [
       {
         path: 'index',
-        component: 'views/Guide/Guide',
-        name: 'GuideDemo',
+        component: 'views/Reward/Reward',
+        name: 'rewardHomePage',
         meta: {
           title: '購物車',
           icon: 'vi-cib:telegram-plane'

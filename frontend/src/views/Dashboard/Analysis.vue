@@ -37,13 +37,13 @@ const barOptionsData = reactive<EChartsOption>(barOptions) as EChartsOption
 // 周活跃量
 const getWeeklyUserActivity = () => {
   const res = [
-    { value: 13253, name: 'analysis.monday' },
-    { value: 34235, name: 'analysis.tuesday' },
-    { value: 26321, name: 'analysis.wednesday' },
-    { value: 12340, name: 'analysis.thursday' },
-    { value: 24643, name: 'analysis.friday' },
-    { value: 1322, name: 'analysis.saturday' },
-    { value: 1324, name: 'analysis.sunday' }
+    { value: 4, name: 'analysis.monday' },
+    { value: 2, name: 'analysis.tuesday' },
+    { value: 5, name: 'analysis.wednesday' },
+    { value: 2, name: 'analysis.thursday' },
+    { value: 9, name: 'analysis.friday' },
+    { value: 0, name: 'analysis.saturday' },
+    { value: 0, name: 'analysis.sunday' }
   ]
 
   set(
@@ -65,18 +65,18 @@ const lineOptionsData = reactive<EChartsOption>(lineOptions) as EChartsOption
 // 每月销售总额
 const getMonthlySales = async () => {
   const res = [
-    { estimate: 100, actual: 120, name: 'analysis.january' },
-    { estimate: 120, actual: 82, name: 'analysis.february' },
-    { estimate: 161, actual: 91, name: 'analysis.march' },
-    { estimate: 134, actual: 154, name: 'analysis.april' },
-    { estimate: 105, actual: 162, name: 'analysis.may' },
-    { estimate: 160, actual: 140, name: 'analysis.june' },
-    { estimate: 165, actual: 145, name: 'analysis.july' },
-    { estimate: 114, actual: 250, name: 'analysis.august' },
-    { estimate: 163, actual: 134, name: 'analysis.september' },
-    { estimate: 185, actual: 56, name: 'analysis.october' },
-    { estimate: 118, actual: 99, name: 'analysis.november' },
-    { estimate: 123, actual: 123, name: 'analysis.december' }
+    { actual: 120, name: 'analysis.january' },
+    { actual: 82, name: 'analysis.february' },
+    { actual: 91, name: 'analysis.march' },
+    { actual: 154, name: 'analysis.april' },
+    { actual: 162, name: 'analysis.may' },
+    { actual: 140, name: 'analysis.june' },
+    { actual: 145, name: 'analysis.july' },
+    { actual: 250, name: 'analysis.august' },
+    { actual: 134, name: 'analysis.september' },
+    { actual: 56, name: 'analysis.october' },
+    { actual: 99, name: 'analysis.november' },
+    { actual: 123, name: 'analysis.december' }
   ]
   set(
     lineOptionsData,
@@ -84,14 +84,14 @@ const getMonthlySales = async () => {
     res.map((v) => t(v.name))
   )
   set(lineOptionsData, 'series', [
-    {
-      name: t('analysis.estimate'),
-      smooth: true,
-      type: 'line',
-      data: res.map((v) => v.estimate),
-      animationDuration: 2800,
-      animationEasing: 'cubicInOut'
-    },
+    // {
+    //   name: t('analysis.estimate'),
+    //   smooth: true,
+    //   type: 'line',
+    //   data: res.map((v) => v.estimate),
+    //   animationDuration: 2800,
+    //   animationEasing: 'cubicInOut'
+    // },
     {
       name: t('analysis.actual'),
       smooth: true,
