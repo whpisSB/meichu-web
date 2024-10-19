@@ -1,6 +1,6 @@
 export interface UserLoginType {
-  username: string
-  password: string
+  user_account: string
+  user_password: string
 }
 
 export interface UserType {

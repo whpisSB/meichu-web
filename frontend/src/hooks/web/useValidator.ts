@@ -80,7 +80,7 @@ export const useValidator = () => {
   const maxlength = (max: number): FormItemRule => {
     return {
       max,
-      message: '长度不能超过' + max + '个字符'
+      message: '長度不能超過' + max + '個字元'
     }
   }
 

@@ -3,22 +3,34 @@ import { ElRow, ElCol, ElCard, ElSkeleton } from 'element-plus'
 import { CountTo } from '@/components/CountTo'
 import { useDesign } from '@/hooks/web/useDesign'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import type { AnalysisTotalTypes } from '@/api/dashboard/analysis/types'
-
+import userInfoService from '@/api/userInfo/userInfoService.ts'
+import { useUserStore } from '@/store/modules/user'
 const { t } = useI18n()
 
 const { getPrefixCls } = useDesign()
 
 const prefixCls = getPrefixCls('panel')
 
-const loading = ref(true)
+const loading = ref(false)
+
+const userStore = useUserStore()
+const TSMCPoint = ref(500)
 
 const totalState = reactive<AnalysisTotalTypes>({
   users: 0,
   messages: 0,
   moneys: 0,
   shoppings: 0
+})
+
+onMounted(async () => {
+  const useraccount = userStore.getUserInfo
+  if (useraccount) {
+    const value = await userInfoService.userInfoApi(useraccount.username)
+    TSMCPoint.value = value.points
+  }
 })
 </script>
 
@@ -44,7 +56,7 @@ const totalState = reactive<AnalysisTotalTypes>({
                 <CountTo
                   class="text-20px font-700 text-right"
                   :start-val="0"
-                  :end-val="5000"
+                  :end-val="TSMCPoint"
                   :duration="1000"
                 />
               </div>

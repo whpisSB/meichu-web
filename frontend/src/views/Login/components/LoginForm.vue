@@ -4,7 +4,7 @@ import { Form, FormSchema } from '@/components/Form'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElCheckbox } from 'element-plus'
 import { useForm } from '@/hooks/web/useForm'
-import { loginApi, getTestRoleApi, getAdminRoleApi } from '@/api/login'
+import loginService from '@/api/login/loginService.ts'
 import { useAppStore } from '@/store/modules/app'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useRouter } from 'vue-router'
@@ -13,7 +13,8 @@ import { UserType } from '@/api/login/types'
 import { useValidator } from '@/hooks/web/useValidator'
 import { useUserStore } from '@/store/modules/user'
 import { BaseButton } from '@/components/Button'
-
+import { ElNotification } from 'element-plus'
+import { format } from 'path'
 const { required } = useValidator()
 
 const emit = defineEmits(['to-register'])
@@ -128,9 +129,9 @@ const schema = reactive<FormSchema[]>([
 const remember = ref(userStore.getRememberMe)
 
 const initLoginInfo = () => {
-  const loginInfo = userStore.getLoginInfo
-  if (loginInfo) {
-    const { username, password } = loginInfo
+  const loginInfomation = userStore.getLoginInfo
+  if (loginInfomation) {
+    const { username, password } = loginInfomation
     setValues({ username, password })
   }
 }
@@ -158,7 +159,11 @@ watch(
 // 登录
 const testPing = async (): Promise<void> => {
   console.log('testPing')
-  const testFetch = await fetch('/api/ping')
+  const userInfo = {
+    user_account: 'ycy.yo@gmail.com',
+    user_password: 'password'
+  }
+  const testFetch = await loginService.loginApi(userInfo)
   console.log('testFetch', testFetch)
 }
 const signIn = async () => {
@@ -167,42 +172,50 @@ const signIn = async () => {
     if (isValid) {
       loading.value = true
       const formData = await getFormData<UserType>()
-
-      try {
-        // const res = loginApi(formData)
+      console.log(formData)
+      // const res = loginApi(formData)
+      const result = await loginService.loginApi({
+        user_account: formData.username,
+        user_password: formData.password
+      })
+      if (result === true) {
         const res = {
-          username: 'admin',
-          password: 'admin',
+          username: formData.username,
+          password: formData.password,
           role: 'admin',
           roleId: '1',
           permissions: ['*.*.*']
         }
-        if (res) {
-          // 是否记住我
-          if (unref(remember)) {
-            userStore.setLoginInfo({
-              username: formData.username,
-              password: formData.password
-            })
-          } else {
-            userStore.setLoginInfo(undefined)
-          }
-          userStore.setRememberMe(unref(remember))
-          userStore.setUserInfo(res)
-          // 是否使用动态路由
-          if (appStore.getDynamicRouter) {
-            getRole()
-          } else {
-            await permissionStore.generateRoutes('static').catch(() => {})
-            permissionStore.getAddRouters.forEach((route) => {
-              addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
-            })
-            permissionStore.setIsAddRouters(true)
-            push({ path: redirect.value || permissionStore.addRouters[0].path })
-          }
+        if (unref(remember)) {
+          userStore.setLoginInfo({
+            username: formData.username,
+            password: formData.password
+          })
+        } else {
+          userStore.setLoginInfo(undefined)
         }
-      } finally {
-        loading.value = false
+        userStore.setRememberMe(unref(remember))
+        userStore.setUserInfo(res)
+        // 是否使用动态路由
+        if (appStore.getDynamicRouter) {
+          getRole()
+        } else {
+          await permissionStore.generateRoutes('static').catch(() => {})
+          permissionStore.getAddRouters.forEach((route) => {
+            addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
+          })
+          permissionStore.setIsAddRouters(true)
+          console.log(redirect.value)
+          push({ path: redirect.value || permissionStore.addRouters[0].path })
+        }
+      } else {
+        ElNotification({
+          title: '錯誤帳號密碼',
+          type: 'error',
+          duration: 1000,
+          dangerouslyUseHTMLString: true,
+          message: '你的帳號密碼錯誤，請你重新登入'
+        })
       }
     }
   })
