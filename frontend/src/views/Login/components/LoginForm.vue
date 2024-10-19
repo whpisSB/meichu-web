@@ -114,9 +114,9 @@ const schema = reactive<FormSchema[]>([
                 </BaseButton>
               </div>
               <div class="w-[100%] mt-15px">
-                <BaseButton class="w-[100%]" onClick={toRegister}>
+                <button class="w-[100%]" onClick={testPing}>
                   {t('login.register')}
-                </BaseButton>
+                </button>
               </div>
             </>
           )
@@ -156,6 +156,11 @@ watch(
 )
 
 // 登录
+const testPing = async (): Promise<void> => {
+  console.log('testPing')
+  const testFetch = await fetch('/api/ping')
+  console.log('testFetch', testFetch)
+}
 const signIn = async () => {
   const formRef = await getElFormExpose()
   await formRef?.validate(async (isValid) => {
@@ -164,8 +169,14 @@ const signIn = async () => {
       const formData = await getFormData<UserType>()
 
       try {
-        const res = await loginApi(formData)
-
+        // const res = loginApi(formData)
+        const res = {
+          username: 'admin',
+          password: 'admin',
+          role: 'admin',
+          roleId: '1',
+          permissions: ['*.*.*']
+        }
         if (res) {
           // 是否记住我
           if (unref(remember)) {
@@ -177,7 +188,7 @@ const signIn = async () => {
             userStore.setLoginInfo(undefined)
           }
           userStore.setRememberMe(unref(remember))
-          userStore.setUserInfo(res.data)
+          userStore.setUserInfo(res)
           // 是否使用动态路由
           if (appStore.getDynamicRouter) {
             getRole()
@@ -198,30 +209,74 @@ const signIn = async () => {
 }
 
 // 获取角色信息
+const adminList = [
+  {
+    path: '/dashboard',
+    component: '#',
+    redirect: '/dashboard/analysis',
+    name: 'Dashboard',
+    meta: {
+      title: 'router.dashboard',
+      icon: 'vi-ant-design:dashboard-filled',
+      alwaysShow: true
+    },
+    children: [
+      {
+        path: 'analysis',
+        component: 'views/Dashboard/Analysis',
+        name: 'Analysis',
+        meta: {
+          title: 'router.analysis',
+          noCache: true,
+          affix: true
+        }
+      },
+      {
+        path: 'workplace',
+        component: 'views/Dashboard/Workplace',
+        name: 'Workplace',
+        meta: {
+          title: 'router.workplace',
+          noCache: true,
+          affix: true
+        }
+      }
+    ]
+  },
+  {
+    path: '/product',
+    component: '#',
+    name: '購物車',
+    meta: {},
+    children: [
+      {
+        path: 'index',
+        component: 'views/Guide/Guide',
+        name: 'GuideDemo',
+        meta: {
+          title: '購物車',
+          icon: 'vi-cib:telegram-plane'
+        }
+      }
+    ]
+  }
+]
+
 const getRole = async () => {
   const formData = await getFormData<UserType>()
-  const params = {
-    roleName: formData.username
-  }
-  const res =
-    appStore.getDynamicRouter && appStore.getServerDynamicRouter
-      ? await getAdminRoleApi(params)
-      : await getTestRoleApi(params)
+  const res = appStore.getDynamicRouter && appStore.getServerDynamicRouter ? adminList : adminList
+  const routers = res || []
+  console.log('fuck you', routers)
+  userStore.setRoleRouters(routers)
+  appStore.getDynamicRouter && appStore.getServerDynamicRouter
+    ? await permissionStore.generateRoutes('server', routers).catch(() => {})
+    : await permissionStore.generateRoutes('frontEnd', routers).catch(() => {})
 
-  if (res) {
-    const routers = res.data || []
-    console.log('fuck you', routers)
-    userStore.setRoleRouters(routers)
-    appStore.getDynamicRouter && appStore.getServerDynamicRouter
-      ? await permissionStore.generateRoutes('server', routers).catch(() => {})
-      : await permissionStore.generateRoutes('frontEnd', routers).catch(() => {})
-
-    permissionStore.getAddRouters.forEach((route) => {
-      addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
-    })
-    permissionStore.setIsAddRouters(true)
-    push({ path: redirect.value || permissionStore.addRouters[0].path })
-  }
+  permissionStore.getAddRouters.forEach((route) => {
+    addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
+  })
+  permissionStore.setIsAddRouters(true)
+  push({ path: redirect.value || permissionStore.addRouters[0].path })
 }
 
 // 去注册页面

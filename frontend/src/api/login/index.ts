@@ -1,34 +1,38 @@
 import request from '@/axios'
 import type { UserType } from './types'
+import { SUCCESS_CODE } from '@/constants'
 
 interface RoleParams {
   roleName: string
 }
 
-export const loginApi = (data: UserType): Promise<IResponse<UserType>> => {
-  return request.post({ url: '/mock/user/login', data })
-}
+const List: {
+  username: string
+  password: string
+  role: string
+  roleId: string
+  permissions: string | string[]
+}[] = [
+  {
+    username: 'admin',
+    password: 'admin',
+    role: 'admin',
+    roleId: '1',
+    permissions: ['*.*.*']
+  },
+  {
+    username: 'test',
+    password: 'test',
+    role: 'test',
+    roleId: '2',
+    permissions: ['example:dialog:create', 'example:dialog:delete']
+  }
+]
 
-export const loginOutApi = (): Promise<IResponse> => {
-  return request.get({ url: '/mock/user/loginOut' })
-}
+export const loginApi = (data: UserType): any => {}
 
-export const getUserListApi = ({ params }: AxiosConfig) => {
-  return request.get<{
-    code: string
-    data: {
-      list: UserType[]
-      total: number
-    }
-  }>({ url: '/mock/user/list', params })
-}
+export const loginOutApi = () => {}
 
-export const getAdminRoleApi = (
-  params: RoleParams
-): Promise<IResponse<AppCustomRouteRecordRaw[]>> => {
-  return request.get({ url: '/mock/role/list', params })
-}
+export const getAdminRoleApi = (params: RoleParams) => {}
 
-export const getTestRoleApi = (params: RoleParams): Promise<IResponse<string[]>> => {
-  return request.get({ url: '/mock/role/list2', params })
-}
+export const getTestRoleApi = (params: RoleParams) => {}

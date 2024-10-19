@@ -6,22 +6,22 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { Table, TableColumn } from '@/components/Table'
 import { BaseButton } from '@/components/Button'
 import { useTable } from '@/hooks/web/useTable'
-import { getCardTableListApi, getTreeTableListApi } from '@/api/table'
+import { getTreeTableListApi } from '@/api/table'
 
-const { tableRegister, tableState } = useTable({
-  fetchDataApi: async () => {
-    const { currentPage, pageSize } = tableState
-    const res = await getTreeTableListApi({
-      pageIndex: unref(currentPage),
-      pageSize: unref(pageSize)
-    })
-    return {
-      list: res.data.list,
-      total: res.data.total
-    }
-  }
-})
-const { dataList, total, currentPage, pageSize } = tableState
+// const { tableRegister, tableState } = useTable({
+//   fetchDataApi: async () => {
+//     const { currentPage, pageSize } = tableState
+//     const res = await getTreeTableListApi({
+//       pageIndex: unref(currentPage),
+//       pageSize: unref(pageSize)
+//     })
+//     return {
+//       list: res.data.list,
+//       total: res.data.total
+//     }
+//   }
+// })
+// const { dataList, total, currentPage, pageSize } = tableState
 
 const { t } = useI18n()
 
@@ -96,59 +96,40 @@ interface Params {
   pageSize?: number
 }
 
-const loading = ref(true)
+const loading = ref(false)
 
-const tableDataList = ref<any[]>([])
-
-const getTableList = async (params?: Params) => {
-  const res = await getCardTableListApi(
-    params || {
-      pageIndex: 1,
-      pageSize: 10
-    }
-  )
-    .catch(() => {})
-    .finally(() => {
-      loading.value = false
-    })
-  if (res) {
-    tableDataList.value = res.data.list
+const tableDataList = ref<any[]>([
+  {
+    logo: 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
+    name: 'Alipay',
+    desc: '餅乾'
+  },
+  {
+    logo: 'https://gw.alipayobjects.com/zos/rmsportal/zOsKZmFRdUtvpqCImOVY.png',
+    name: 'Angular',
+    desc: '飲料'
+  },
+  {
+    logo: 'https://gw.alipayobjects.com/zos/rmsportal/siCrBXXhmvTQGWPNLBow.png',
+    name: 'Bootstrap',
+    desc: '在中台产品的研发过程中，会出现不同的设计规范和实现方式，但其中往往存在很多类似的页面和组件，这些类似的组件会被抽离成一套标准规范。'
+  },
+  {
+    logo: 'https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png',
+    name: 'React',
+    desc: '在中台产品的研发过程中，会出现不同的设计规范和实现方式，但其中往往存在很多类似的页面和组件，这些类似的组件会被抽离成一套标准规范。'
+  },
+  {
+    logo: 'https://gw.alipayobjects.com/zos/rmsportal/ComBAopevLwENQdKWiIn.png',
+    name: 'Vue',
+    desc: '在中台产品的研发过程中，会出现不同的设计规范和实现方式，但其中往往存在很多类似的页面和组件，这些类似的组件会被抽离成一套标准规范。'
+  },
+  {
+    logo: 'https://gw.alipayobjects.com/zos/rmsportal/nxkuOJlFJuAUhzlMTCEe.png',
+    name: 'Webpack',
+    desc: '在中台产品的研发过程中，会出现不同的设计规范和实现方式，但其中往往存在很多类似的页面和组件，这些类似的组件会被抽离成一套标准规范。'
   }
-  tableDataList.value = [
-    {
-      logo: 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
-      name: 'Alipay',
-      desc: '餅乾'
-    },
-    {
-      logo: 'https://gw.alipayobjects.com/zos/rmsportal/zOsKZmFRdUtvpqCImOVY.png',
-      name: 'Angular',
-      desc: '飲料'
-    },
-    {
-      logo: 'https://gw.alipayobjects.com/zos/rmsportal/siCrBXXhmvTQGWPNLBow.png',
-      name: 'Bootstrap',
-      desc: '在中台产品的研发过程中，会出现不同的设计规范和实现方式，但其中往往存在很多类似的页面和组件，这些类似的组件会被抽离成一套标准规范。'
-    },
-    {
-      logo: 'https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png',
-      name: 'React',
-      desc: '在中台产品的研发过程中，会出现不同的设计规范和实现方式，但其中往往存在很多类似的页面和组件，这些类似的组件会被抽离成一套标准规范。'
-    },
-    {
-      logo: 'https://gw.alipayobjects.com/zos/rmsportal/ComBAopevLwENQdKWiIn.png',
-      name: 'Vue',
-      desc: '在中台产品的研发过程中，会出现不同的设计规范和实现方式，但其中往往存在很多类似的页面和组件，这些类似的组件会被抽离成一套标准规范。'
-    },
-    {
-      logo: 'https://gw.alipayobjects.com/zos/rmsportal/nxkuOJlFJuAUhzlMTCEe.png',
-      name: 'Webpack',
-      desc: '在中台产品的研发过程中，会出现不同的设计规范和实现方式，但其中往往存在很多类似的页面和组件，这些类似的组件会被抽离成一套标准规范。'
-    }
-  ]
-}
-
-getTableList()
+])
 
 const actionClick = (row?: any) => {
   console.log(row)
@@ -188,7 +169,7 @@ const actionClick = (row?: any) => {
       </template>
     </Table>
   </ContentWrap>
-  <ContentWrap title="購物車清單">
+  <!-- <ContentWrap title="購物車清單">
     <Table
       v-model:pageSize="pageSize"
       v-model:currentPage="currentPage"
@@ -202,5 +183,5 @@ const actionClick = (row?: any) => {
       }"
       @register="tableRegister"
     />
-  </ContentWrap>
+  </ContentWrap> -->
 </template>
