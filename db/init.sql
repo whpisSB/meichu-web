@@ -77,7 +77,7 @@ INSERT INTO User_Rewards (Line_ID, RewardID) VALUES
 INSERT INTO TSMC_User (Name, Github_ID, Email, Password, Line_ID, Points) VALUES
     ('ycy.yo', 'ycy.yo', 'ycy.yo@gmail.com', 'password', "line_id_ycy", 200),
     ('amber chen', 'amber', 'amber@world', 'password', "line_id_amber", 200),
-    ('weiling','weiling','aaa','password','Ua0e4d2058f68cfb9c16953c29bac8399',200);
+    ('weiling','weiling','aaa','password','Ua0e4d2058f68cfb9c16953c29bac8399',20000);
 
 INSERT INTO Reward (Title, ThumbnailImage, Description, Points) VALUES
     ('Keyboard', 'https://i.imgur.com/5HBQx1m.jpeg', 'good keyboard', 100),

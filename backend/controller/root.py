@@ -217,3 +217,21 @@ def get_user_rewards():
         })
     
     return jsonify(response)
+
+def get_user_info():
+    data = request.get_json()
+    email = data['email']
+    
+    user = TSMC_User.query.filter_by(Email=email).first()
+    
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    
+    return jsonify({
+        'name': user.Name,
+        'github_id': user.Github_ID,
+        'email': user.Email,
+        'line_id': user.Line_ID,
+        'points': user.Points
+    })
+

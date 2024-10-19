@@ -1,6 +1,6 @@
 import requests
 
-url = "http://140.112.251.50:5000/user_rewards"
+url = "http://140.112.251.50:5000/user_info"
 
 # payload = {
 #     "user_account": "ycy.yo@gmail.com",
@@ -19,7 +19,7 @@ url = "http://140.112.251.50:5000/user_rewards"
 # }
 
 payload = {
-    "line_id": "Ua0e4d2058f68cfb9c16953c29bac8399"
+    "email": "aaa"
 }
 #/user_rewards?line_id=Ua0e4d2058f68cfb9c16953c29bac8399
 #                      Ua0e4d2058f68cfb9c16953c29bac8399
