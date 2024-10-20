@@ -18,11 +18,6 @@ import numpy as np
 from PIL import Image
 from diffusers import StableDiffusionPipeline
 
-pipe = StableDiffusionPipeline.from_pretrained(
-    "./icon_model",
-    use_safetensors=True,
-).to("cpu")
-
 ################################################
 
 NOTIFY_DATE = 5
@@ -142,6 +137,11 @@ def icon():
     prompt = data['prompt']
     #!!!!!!!!!!!!!!!!!!TO DO!!!!!!!!!!!!!!!!!!!!
 
+    pipe = StableDiffusionPipeline.from_pretrained(
+        "./icon_model",
+        use_safetensors=True,
+    ).to("cpu")
+
     seed = random.randint(0, 1_000_000)
     guide = random.uniform(8.5, 12.0)
     gen = torch.Generator().manual_seed(seed)
@@ -153,7 +153,7 @@ def icon():
         num_inference_steps=15,
         guidance_scale=guide,
         generator=gen,
-    ).images[0].resize((64, 64), Image.LANCZOS)
+    ).images[0].resize((128, 128), Image.LANCZOS)
 
     np_image = np.array(images)
     if np_image.sum() == 0:
@@ -161,10 +161,13 @@ def icon():
     
     # remove space in prompt string
     prompt_ = prompt.replace(" ", "_")
-    images.save(f"./static/{user_id}_{prompt_}_{seed}.png")
+    print(f"static/{user_id}_{prompt_}_{seed}.png")
+    images.save(f"static/{user_id}_{prompt_}_{seed}.png")
 
-    url = imgur_upload(os.path.join(os.path.dirname(__file__), f'./static/{user_id}_{prompt}_{seed}.png'))
+    url = imgur_upload(os.path.join(os.path.dirname(__file__), f'../static/{user_id}_{prompt_}_{seed}.png'))
 
+    with open(f"static/{user_id}_{prompt_}_{seed}.txt", "w") as f:
+        f.write(url)
     # buffered = io.BytesIO()
     # images.save(buffered, format="JPEG")
     # encoded_image = base64.b64encode(buffered.getvalue()).decode('utf-8')
@@ -185,13 +188,33 @@ def get_user_rewards():
     rewards = Reward.query.filter(Reward.RewardID.in_(reward_ids)).all()
     
     response = []
+    have_record_icons = False
     for reward in rewards:
-        response.append({
-            'reward_id': reward.RewardID,
-            'title': reward.Title,
-            'thumbnail_image': reward.ThumbnailImage,
-            'description': reward.Description
-        })
+        if reward.Title == "Personal Icon" and not have_record_icons:
+            files = os.listdir("static")
+            print(files)
+            for file in files:
+                if file.startswith(f"{line_id}_") and file.endswith(".png"):
+                    file_path = file.replace(".png", ".txt")
+                    with open (f"static/{file_path}", "r") as f:
+                        url = f.read()
+                        print("get icon url", url)
+                        response.append({
+                            'reward_id': reward.RewardID,
+                            'title': reward.Title,
+                            'thumbnail_image': url,
+                            'description': reward.Description
+                        })
+
+            have_record_icons = True
+
+        elif reward.Title != "Personal Icon":
+            response.append({
+                'reward_id': reward.RewardID,
+                'title': reward.Title,
+                'thumbnail_image': reward.ThumbnailImage,
+                'description': reward.Description
+            })
     
     return jsonify(response)
 
@@ -224,7 +247,7 @@ def review_result():
     db.session.add(author)
 
     reviewer_github_id = TSMC_User.query.filter_by(Line_ID=reviewer_line_id).first().Github_ID
-    review = Review(
+    review = Review(    
         AuthorGithubID=author_github_id,
         PRUrl=pr_url,
         ReviewerGithubID=reviewer_github_id,
