@@ -1,6 +1,6 @@
 import requests
 
-url = "http://140.112.251.50:5000/icon"
+url = "http://140.112.251.50:5000/exchange_reward"
 
 # payload = {
 #     "user_account": "ycy.yo@gmail.com",
@@ -19,7 +19,8 @@ url = "http://140.112.251.50:5000/icon"
 # }
 
 payload = {
-    "prompt": "good"
+    "line_id": "U6d7b420fec2d8fc88fdc073603990788",
+    "reward_id": 1
 }
 #/user_rewards?line_id=Ua0e4d2058f68cfb9c16953c29bac8399
 #                      Ua0e4d2058f68cfb9c16953c29bac8399
