@@ -12,7 +12,7 @@ WORKDIR /app
 COPY . . 
 RUN pnpm install
 
-#ENV NODE_OPTIONS="--max_old_space_size=8172"
+ENV NODE_OPTIONS="--max_old_space_size=10240"
 RUN pnpm run build
 FROM docker.io/nginx:1.21.1-alpine
 WORKDIR /www
