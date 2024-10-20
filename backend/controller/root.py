@@ -12,16 +12,16 @@ from imgurpython import ImgurClient
 import os
 
 #################### GEN AI ####################
-# import random
-# import torch
-# import numpy as np
-# from PIL import Image
-# from diffusers import StableDiffusionPipeline
+import random
+import torch
+import numpy as np
+from PIL import Image
+from diffusers import StableDiffusionPipeline
 
-# pipe = StableDiffusionPipeline.from_pretrained(
-#     "./icon_model",
-#     use_safetensors=True,
-# ).to("cpu")
+pipe = StableDiffusionPipeline.from_pretrained(
+    "./icon_model",
+    use_safetensors=True,
+).to("cpu")
 
 ################################################
 
@@ -136,41 +136,41 @@ def exchange_reward():
     
 
 def icon():
-    pass
-    # data = request.get_json()
-    # user_id = data['line_id']
-    # prompt = data['prompt']
-    # #!!!!!!!!!!!!!!!!!!TO DO!!!!!!!!!!!!!!!!!!!!
+    # pass
+    data = request.get_json()
+    user_id = data['line_id']
+    prompt = data['prompt']
+    #!!!!!!!!!!!!!!!!!!TO DO!!!!!!!!!!!!!!!!!!!!
 
-    # seed = random.randint(0, 1_000_000)
-    # guide = random.uniform(8.5, 12.0)
-    # gen = torch.Generator().manual_seed(seed)
+    seed = random.randint(0, 1_000_000)
+    guide = random.uniform(8.5, 12.0)
+    gen = torch.Generator().manual_seed(seed)
 
-    # # with torch.cpu.amp.autocast(enabled=True, dtype=torch.float16):
-    # images = pipe(
-    #     prompt,
-    #     num_images_per_prompt=1,
-    #     num_inference_steps=15,
-    #     guidance_scale=guide,
-    #     generator=gen,
-    # ).images[0].resize((64, 64), Image.LANCZOS)
+    # with torch.cpu.amp.autocast(enabled=True, dtype=torch.float16):
+    images = pipe(
+        prompt,
+        num_images_per_prompt=1,
+        num_inference_steps=15,
+        guidance_scale=guide,
+        generator=gen,
+    ).images[0].resize((64, 64), Image.LANCZOS)
 
-    # np_image = np.array(images)
-    # if np_image.sum() == 0:
-    #     return jsonify({'message': 'NSFW'}), 400    # if the image is NSFW, return 400
+    np_image = np.array(images)
+    if np_image.sum() == 0:
+        return jsonify({'message': 'NSFW'}), 400    # if the image is NSFW, return 400
     
-    # # remove space in prompt string
-    # prompt_ = prompt.replace(" ", "_")
-    # images.save(f"./static/{user_id}_{prompt_}_{seed}.png")
+    # remove space in prompt string
+    prompt_ = prompt.replace(" ", "_")
+    images.save(f"./static/{user_id}_{prompt_}_{seed}.png")
 
-    # url = imgur_upload(os.path.join(os.path.dirname(__file__), f'./static/{user_id}_{prompt}_{seed}.png'))
+    url = imgur_upload(os.path.join(os.path.dirname(__file__), f'./static/{user_id}_{prompt}_{seed}.png'))
 
-    # # buffered = io.BytesIO()
-    # # images.save(buffered, format="JPEG")
-    # # encoded_image = base64.b64encode(buffered.getvalue()).decode('utf-8')
+    # buffered = io.BytesIO()
+    # images.save(buffered, format="JPEG")
+    # encoded_image = base64.b64encode(buffered.getvalue()).decode('utf-8')
 
-    # return jsonify({'url': url})
-    # # return jsonify({'icon': encoded_image, 'url': 'https://140.112.251.50:5000/assets/icon.png'})
+    return jsonify({'url': url})
+    # return jsonify({'icon': encoded_image, 'url': 'https://140.112.251.50:5000/assets/icon.png'})
 
 
 def get_user_rewards():
