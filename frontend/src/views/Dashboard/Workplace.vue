@@ -14,8 +14,8 @@ import { useUserStore } from '@/store/modules/user'
 import type { WorkplaceTotal, Project, Dynamic, Team } from '@/api/dashboard/workplace/types'
 import { set } from 'lodash-es'
 
-const loading = ref(true)
 const TSMCPoint = ref(500)
+const LineID = ref('')
 const userStore = useUserStore()
 const totalSate = reactive<WorkplaceTotal>({
   project: 10,
@@ -23,42 +23,98 @@ const totalSate = reactive<WorkplaceTotal>({
   todo: 10
 })
 
-
 onMounted(async () => {
   const useraccount = userStore.getUserInfo
   if (useraccount) {
     const userInformation = await userInfoService.userInfoApi(useraccount.username)
     TSMCPoint.value = userInformation.points
+    LineID.value = userInformation.line_id
   }
 })
 const projects = reactive<Project[]>([])
-
 // 获取项目数
 
 // 获取动态
+interface PR {
+  ReviewID: string
+  AuthorGithubID: string
+  PRUrl: string
+  ReviewerGithubID: string
+  Points: number
+  ReviewAt: string
+}
 
-const dynamics = reactive<Dynamic[]>([
-  {
-    keys: ['workplace.push', 'Github'],
-    time: new Date()
-  },
-  {
-    keys: ['workplace.push', 'Github'],
-    time: new Date('2024-10-20')
+const PRs = ref<PR[]>([])
+
+const getPRs = async () => {
+  const response = await fetch('/api/review_history', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      line_id: "U6d7b420fec2d8fc88fdc073603990788"
+    })
+  })
+
+  PRs.value = await response.json()
+  console.log(PRs.value)
+  return PRs.value
+}
+interface RankingListProps {
+  name: string
+  github_id: string
+  email: string
+  line_id: string
+  points: number
+  total_points: number
+  group: string
+}
+
+const rankingList = async (): Promise<RankingListProps[]> => {
+  const response = await fetch('/api/all_users')
+  return response.json()
+}
+
+interface ListProps {
+  name: string
+  email: string
+  importance: number
+  group: string
+}
+
+const loading = ref(true)
+const List = ref<RankingListProps[]>([])
+const team = reactive<Team[]>([])
+
+
+onMounted(async () => {
+  const res = await rankingList()
+  console.log(res)
+  for (const item of res) {
+    team.push({
+      name: item.name,
+      icon: 'icon-park-outline:user'
+    })
   }
-])
+  const PRsRes = await getPRs()
+  loading.value = false
+  console.log(PRs.value)
+  for (let i = 2; i < PRsRes.length; i++) {
+    var tmpTime = new Date(PRsRes[i].review_at)
+    tmpTime.setHours(tmpTime.getHours() + 8);
+    dynamics.push({
+      keys: ['workplace.push', 'Github'],
+      time: tmpTime
+    })
+
+  }
+})
+
+const dynamics = reactive<Dynamic[]>([])
 
 // 获取团队
-const team = reactive<Team[]>([
-  {
-    name: 'ycy.yo',
-    icon: 'icon-park-outline:user'
-  },
-  {
-    name: 'ping-yu',
-    icon: 'icon-park-outline:user'
-  }
-])
+
 
 // 获取指数
 const radarOptionData = reactive<EChartsOption>(radarOption) as EChartsOption
@@ -202,9 +258,9 @@ const { t } = useI18n()
         </template>
         <ElSkeleton :loading="loading" animated>
           <ElRow>
-            <ElCol v-for="item in team" :key="`team-${item.name}`" :span="12" class="mb-20px">
+            <ElCol v-for="item in team" :key="`team-${item.name}`" :span="24" class="mb-20px">
               <div class="flex items-center">
-                <Icon :icon="item.icon" class="mr-10px" />
+                <Icon :icon="item.icon" />
                 <ElLink type="default" :underline="false">
                   {{ item.name }}
                 </ElLink>

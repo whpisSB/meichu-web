@@ -63,7 +63,7 @@ onMounted(async () => {
     name: item.name,
     email: item.email,
     importance: item.total_points,
-    group: item.group
+    group: 'BSID'
   }))
   loading.value = false
 })
