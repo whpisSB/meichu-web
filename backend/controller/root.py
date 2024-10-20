@@ -8,6 +8,8 @@ from model.models import User_Rewards
 from model.models import TSMC_User
 from model.models import Review
 import requests
+from imgurpython import ImgurClient
+import os
 
 #################### GEN AI ####################
 import random
@@ -178,11 +180,13 @@ def icon():
     if np_image.sum() == 0:
         return jsonify({'message': 'NSFW'}), 400    # if the image is NSFW, return 400
 
-    buffered = io.BytesIO()
-    images.save(buffered, format="JPEG")
-    encoded_image = base64.b64encode(buffered.getvalue()).decode('utf-8')
+    url = imgur_upload(os.path.join(os.path.dirname(__file__), 'assets/icon.png'))
 
-    return jsonify({'url': 'https://140.112.251.50:5000/assets/icon.png'})
+    # buffered = io.BytesIO()
+    # images.save(buffered, format="JPEG")
+    # encoded_image = base64.b64encode(buffered.getvalue()).decode('utf-8')
+
+    return jsonify({'url': url})
     # return jsonify({'icon': encoded_image, 'url': 'https://140.112.251.50:5000/assets/icon.png'})
 
 
@@ -281,4 +285,19 @@ def review_history():
 
     return jsonify(history), 200
 
-    
+def imgur_upload(PATH):
+    imgur_client = ImgurClient(
+        os.getenv("IMGUR_CLIENT_ID"), 
+        os.getenv("IMGUR_CLIENT_SECRET"),
+        os.getenv("IMGUR_ACCESS_TOKEN"),
+        os.getenv("IMGUR_REFRESH_TOKEN"),
+    )
+    config = {
+        'album': os.getenv("IMGUR_ALBUM_ID"),
+        'name': 'test-name!',
+        'title': 'test-title',
+        'description': 'test-description'
+    }
+    imgur_image = imgur_client.upload_from_path(PATH, config=config, anon=False)
+
+    return imgur_image['link']
