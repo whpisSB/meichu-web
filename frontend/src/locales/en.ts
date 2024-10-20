@@ -253,7 +253,7 @@ export default {
     contribution: 'Contribution',
     hot: 'Hot',
     yield: 'Yield',
-    dynamic: 'Dynamic',
+    dynamic: 'Github Dynamic',
     push: 'push',
     pushCode: 'Archer push code to Github',
     follow: 'Follow'

@@ -27,7 +27,32 @@ const projects = reactive<Project[]>([])
 // 获取项目数
 
 // 获取动态
-const dynamics = reactive<Dynamic[]>([])
+const dynamics = reactive<Dynamic[]>([
+  {
+    keys: ['workplace.push', 'Github'],
+    time: new Date()
+  },
+  {
+    keys: ['workplace.push', 'Github'],
+    time: new Date()
+  },
+  {
+    keys: ['workplace.push', 'Github'],
+    time: new Date()
+  },
+  {
+    keys: ['workplace.push', 'Github'],
+    time: new Date()
+  },
+  {
+    keys: ['workplace.push', 'Github'],
+    time: new Date()
+  },
+  {
+    keys: ['workplace.push', 'Github'],
+    time: new Date()
+  }
+])
 
 // 获取团队
 const team = reactive<Team[]>([])

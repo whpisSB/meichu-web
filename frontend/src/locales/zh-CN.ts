@@ -249,8 +249,8 @@ export default {
     contribution: '貢獻',
     hot: '熱度',
     yield: '產量',
-    dynamic: '動態',
-    push: '推送',
+    dynamic: 'Github 動態',
+    push: 'push',
     pushCode: 'Archer 推送程式碼到 Github',
     follow: '關注'
   },

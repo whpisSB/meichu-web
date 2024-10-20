@@ -9,3 +9,11 @@ export interface UserType {
   role: string
   roleId: string
 }
+
+export interface userAllInfomationType {
+  name: string
+  github_id: string
+  email: string
+  line_id: string
+  points: number
+}

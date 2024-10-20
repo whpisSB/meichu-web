@@ -4,8 +4,7 @@ import { CountTo } from '@/components/CountTo'
 import { useDesign } from '@/hooks/web/useDesign'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, onMounted } from 'vue'
-import type { AnalysisTotalTypes } from '@/api/dashboard/analysis/types'
-import userInfoService from '@/api/userInfo/userInfoService.ts'
+import userInfoService from '@/api/userInfo/userInfoService'
 import { useUserStore } from '@/store/modules/user'
 const { t } = useI18n()
 
@@ -28,8 +27,9 @@ const totalState = reactive<AnalysisTotalTypes>({
 onMounted(async () => {
   const useraccount = userStore.getUserInfo
   if (useraccount) {
-    const value = await userInfoService.userInfoApi(useraccount.username)
-    TSMCPoint.value = value.points
+    const userInformation = await userInfoService.userInfoApi(useraccount.username)
+    userStore.setUserAllInfomation(userInformation)
+    TSMCPoint.value = userInformation.points
   }
 })
 </script>

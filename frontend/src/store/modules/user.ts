@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { store } from '../index'
-import { UserLoginType, UserType } from '@/api/login/types'
+import { userAllInfomationType, UserLoginType, UserType } from '@/api/login/types'
 import { ElMessageBox } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 // import { loginOutApi } from '@/api/login'
@@ -14,6 +14,7 @@ interface UserState {
   roleRouters?: string[] | AppCustomRouteRecordRaw[]
   rememberMe: boolean
   loginInfo?: UserLoginType
+  userAllInfomation: userAllInfomationType
 }
 
 export const useUserStore = defineStore('user', {
@@ -25,7 +26,14 @@ export const useUserStore = defineStore('user', {
       roleRouters: undefined,
       // 记住我
       rememberMe: true,
-      loginInfo: undefined
+      loginInfo: undefined,
+      userAllInfomation: {
+        name: '',
+        github_id: '',
+        email: '',
+        line_id: '',
+        points: 0
+      }
     }
   },
   getters: {
@@ -92,6 +100,9 @@ export const useUserStore = defineStore('user', {
     },
     setLoginInfo(loginInfo: UserLoginType | undefined) {
       this.loginInfo = loginInfo
+    },
+    setUserAllInfomation(userAllInfomation: userAllInfomationType) {
+      this.userAllInfomation = userAllInfomation
     }
   },
   persist: true

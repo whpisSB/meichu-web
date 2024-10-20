@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { ref, reactive, unref, onMounted } from 'vue'
-import { ElLink, ElDivider, ElTag, ElDialog, ElInput, ElButton } from 'element-plus'
+import { ElLink, ElDivider, ElTag, ElDialog, ElInput, ElButton, ElMessage } from 'element-plus'
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Table, TableColumn } from '@/components/Table'
@@ -9,6 +9,7 @@ import rewardServce from '@/api/reward/rewardService'
 import { useTable } from '@/hooks/web/useTable'
 import { getTreeTableListApi } from '@/api/table'
 import { rewardItemType } from '@/api/reward/types'
+import { useUserStore } from '@/store/modules/user'
 
 // const { tableRegister, tableState } = useTable({
 //   fetchDataApi: async () => {
@@ -99,8 +100,14 @@ interface Params {
 }
 
 const loading = ref(false)
-
 const tableDataList = ref<rewardItemType[]>([])
+const selectedItem = ref<rewardItemType>({
+  description: '',
+  points: 0,
+  reward_id: 0,
+  thumbnail_image: '',
+  title: ''
+})
 onMounted(async () => {
   console.log('onMounted')
   tableDataList.value = await rewardServce.getRewardApi()
@@ -138,26 +145,53 @@ onMounted(async () => {
 //   }
 // ])
 
-const actionClick = (item) => {
+const actionClick = (item: rewardItemType) => {
   selectedItem.value = item
   dialogVisible.value = true
 }
 
-const handleConfirm = () => {
-  // Here you can add the logic to add the item to the cart
-  console.log('Adding to cart:', selectedItem.value, 'Quantity:', quantity.value)
-  dialogVisible.value = false
-  quantity.value = 1
+const handleConfirm = async () => {
+  if (!selectedItem.value) return
+
+  loading.value = true
+  try {
+    const userAllInfomation = userStore.userAllInfomation
+    const response = await rewardServce.exchangeRewardApi(
+      userAllInfomation.line_id,
+      selectedItem.value.reward_id.toString()
+    )
+    console.log(response)
+    if (response) {
+      ElMessage.success('兌換成功！')
+      // Update the user's points
+      // const userInfo = userStore.getUserInfo()
+      // if (userInfo) {
+      //   userStore.setUserInfo({
+      //     ...userInfo,
+      //     points: userInfo.points - selectedItem.value.points
+      //   })
+      // }
+      // Refresh the rewards list
+    } else {
+      ElMessage.error(response.message || '兌換失敗，請稍後再試。')
+    }
+  } catch (error) {
+    console.error('Error exchanging reward:', error)
+    ElMessage.error('兌換時發生錯誤，請稍後再試。')
+  } finally {
+    loading.value = false
+    dialogVisible.value = false
+  }
 }
 
 // Add these new refs
 const dialogVisible = ref(false)
-const selectedItem = ref(null)
 const quantity = ref(1)
+const userStore = useUserStore()
 </script>
 
 <template>
-  <ContentWrap :title="t('reward.rewardList')">
+  <ContentWrap title="商品清單">
     <Table
       :columns="columns"
       :data="tableDataList"
@@ -184,7 +218,7 @@ const quantity = ref(1)
       <template #content-footer="item">
         <div>
           <div class="flex-1 text-center" @click="() => actionClick(item)">
-            <ElLink :underline="false">{{ t('reward.buyNow') }}</ElLink>
+            <ElLink :underline="false">加入購物車</ElLink>
           </div>
         </div>
       </template>
@@ -196,12 +230,12 @@ const quantity = ref(1)
     <div v-if="selectedItem">
       <p>{{ selectedItem.title }}</p>
       <p>價格: {{ selectedItem.points }}P</p>
-      <ElInput v-model="quantity" type="number" :min="1" placeholder="數量"></ElInput>
+      <p>數量: 1</p>
     </div>
     <template #footer>
       <span class="dialog-footer">
         <ElButton @click="dialogVisible = false">取消</ElButton>
-        <ElButton type="primary" @click="handleConfirm">確認</ElButton>
+        <ElButton type="primary" @click="handleConfirm" :loading="loading">確認兌換</ElButton>
       </span>
     </template>
   </ElDialog>
