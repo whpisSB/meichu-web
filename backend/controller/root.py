@@ -174,13 +174,13 @@ def icon():
         generator=gen,
     ).images[0].resize((64, 64), Image.LANCZOS)
 
-    images.save(f"./assets/icon.png")
+    images.save(f"./static/icon.png")
 
     np_image = np.array(images)
     if np_image.sum() == 0:
         return jsonify({'message': 'NSFW'}), 400    # if the image is NSFW, return 400
 
-    url = imgur_upload(os.path.join(os.path.dirname(__file__), 'assets/icon.png'))
+    url = imgur_upload(os.path.join(os.path.dirname(__file__), 'static/icon.png'))
 
     # buffered = io.BytesIO()
     # images.save(buffered, format="JPEG")
