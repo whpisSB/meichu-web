@@ -3,19 +3,66 @@ import datetime
 
 db = SQLAlchemy()
 
-class Staff_Info(db.Model):
-    __tablename__ = 'Staff_Info'
-
-    StaffID = db.Column(db.Integer, primary_key=True)
-    StaffName = db.Column(db.String(255))
-    Position = db.Column(db.String(255))
-    Gmail = db.Column(db.String(255))
+class TSMC_User(db.Model):
+    __tablename__ = 'TSMC_User'
+    Employee_ID = db.Column(db.Integer, primary_key=True)
+    Github_ID = db.Column(db.String(255))
+    Name = db.Column(db.String(255))
+    Email = db.Column(db.String(255))
     Password = db.Column(db.String(255))
-    PhoneNumber = db.Column(db.Integer)
-    Paid = db.Column(db.Boolean)
+    Line_ID = db.Column(db.String(512))
+    Points = db.Column(db.Integer)
+    Total_Points = db.Column(db.Integer)
+    _Group = db.Column(db.String(255))
+
+class Training_Certifications(db.Model):
+    __tablename__ = 'Training_Certifications'
+
+    Employee_ID = db.Column(db.Integer, primary_key=True)
+    Training_Name = db.Column(db.String(255))
+    Completion_Date = db.Column(db.String(255))
+    Expire_Date = db.Column(db.String(255))
 
     def __repr__(self):
-        return f"<Staff_Information {self.StaffID}>"
+        return f"<Training_Certifications {self.Employee_ID}>"
+
+class Pr(db.Model):
+    __tablename__ = 'Pr'
+
+    PrID = db.Column(db.Integer, primary_key=True)
+    RepositoryID = db.Column(db.String(255))
+    GithubID = db.Column(db.String(255))
+    CommitCount = db.Column(db.Integer)
+    Additions = db.Column(db.Integer)
+    Deletions = db.Column(db.Integer)
+    Total = db.Column(db.Integer)
+    Summary = db.Column(db.String(10240))
+    Reviewers = db.Column(db.String(255))
+
+    def __repr__(self):
+        return f"<Pr {self.PrID}>"
+
+class Reward(db.Model):
+    __tablename__ = 'Reward'
+
+    RewardID = db.Column(db.Integer, primary_key=True)
+    Title = db.Column(db.String(255))
+    ThumbnailImage = db.Column(db.String(1024))
+    Description = db.Column(db.String(1024))
+    Points = db.Column(db.Integer)
+
+    def __repr__(self):
+        return f"<Reward {self.RewardID}>"
+
+class User_Rewards(db.Model):
+    __tablename__ = 'User_Rewards'
+
+    ID = db.Column(db.Integer, primary_key=True)
+    Line_ID = db.Column(db.String(512))
+    RewardID = db.Column(db.Integer)
+
+    def __repr__(self):
+        return f"<User_Rewards {self.ID}>"
 
 class Dish_Info(db.Model):
     __tablename__ = 'Dish_Info'
@@ -79,12 +126,26 @@ class Orders(db.Model):
 class Review(db.Model):
     __tablename__ = 'Review'
 
-    SerialID = db.Column(db.Integer, primary_key=True)
-    OrderID = db.Column(db.Integer)
-    CustomerID = db.Column(db.Integer)
-    DishID = db.Column(db.Integer)
-    Rating = db.Column(db.Integer)
-    Time = db.Column(db.DateTime)
+    ReviewID = db.Column(db.Integer, primary_key=True)
+    AuthorGithubID = db.Column(db.String(255))
+    PRUrl = db.Column(db.String(255))
+    ReviewerGithubID = db.Column(db.String(255))
+    Points = db.Column(db.Integer)
+    ReviewAt = db.Column(db.DateTime)
 
     def __repr__(self):
         return f"<Review {self.ReviewID}>"
+
+class Staff_Info(db.Model):
+    __tablename__ = 'Staff_Info'
+
+    StaffID = db.Column(db.Integer, primary_key=True)
+    StaffName = db.Column(db.String(255))
+    Position = db.Column(db.String(255))
+    Gmail = db.Column(db.String(255))
+    Password = db.Column(db.String(255))
+    PhoneNumber = db.Column(db.Integer)
+    Paid = db.Column(db.Boolean)
+
+    def __repr__(self):
+        return f"<Staff_Information {self.StaffID}>"
