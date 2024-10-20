@@ -136,7 +136,7 @@ export default {
     menu12: '選單1-2',
     menu2: '選單2',
     dashboard: '首頁',
-    analysis: '分析頁',
+    analysis: '分析',
     workplace: '工作區',
     guide: '換獎品',
     component: '元件',

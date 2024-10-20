@@ -4,7 +4,7 @@ import { Form, FormSchema } from '@/components/Form'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElCheckbox } from 'element-plus'
 import { useForm } from '@/hooks/web/useForm'
-import loginService from '@/api/login/loginService.ts'
+import loginService from '@/api/login/loginService'
 import { useAppStore } from '@/store/modules/app'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useRouter } from 'vue-router'
@@ -14,7 +14,6 @@ import { useValidator } from '@/hooks/web/useValidator'
 import { useUserStore } from '@/store/modules/user'
 import { BaseButton } from '@/components/Button'
 import { ElNotification } from 'element-plus'
-import { format } from 'path'
 const { required } = useValidator()
 
 const emit = defineEmits(['to-register'])
