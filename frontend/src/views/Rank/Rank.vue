@@ -59,7 +59,7 @@ const List = ref<RankingListProps[]>([])
 onMounted(async () => {
   const res = await rankingList()
   console.log(res)
-  List.value = res.map(item => ({
+  List.value = res.map((item) => ({
     name: item.name,
     email: item.email,
     importance: item.total_points,
