@@ -152,7 +152,7 @@ export default {
     form: 'Form',
     defaultForm: 'All examples',
     search: 'Search',
-    table: 'Table',
+    table: 'Ranking',
     defaultTable: 'Basic example',
     editor: 'Editor',
     richText: 'Rich text',
@@ -438,11 +438,11 @@ export default {
     sticky: 'Sticky'
   },
   tableDemo: {
-    table: 'Table',
+    table: 'Ranking',
     tableDes: 'Secondary packaging of Table components based on ElementPlus',
     index: 'Index',
     title: 'Title',
-    author: 'Author',
+    author: 'Account',
     displayTime: 'Display time',
     importance: 'Importance',
     pageviews: 'Pageviews',

@@ -94,7 +94,7 @@ function handleShowForm(show = false) {
         <div :class="`${prefixCls}-entry-content`">
           <div class="flex flex-col items-center">
             <img src="@/assets/imgs/avatar.jpg" alt="" class="w-70px h-70px rounded-[50%]" />
-            <span class="text-14px my-10px text-[var(--logo-title-text-color)]">Archer</span>
+            <span class="text-14px my-10px text-[var(--logo-title-text-color)]">ycy.yo</span>
           </div>
           <ElInput
             type="password"

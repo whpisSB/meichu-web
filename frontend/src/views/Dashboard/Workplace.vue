@@ -2,32 +2,39 @@
 import { useTimeAgo } from '@/hooks/web/useTimeAgo'
 import { ElRow, ElCol, ElSkeleton, ElCard, ElDivider, ElLink } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { CountTo } from '@/components/CountTo'
 import { formatTime } from '@/utils'
-import { Echart } from '@/components/Echart'
 import { EChartsOption } from 'echarts'
 import { radarOption } from './echarts-data'
 import { Highlight } from '@/components/Highlight'
+import userInfoService from '@/api/userInfo/userInfoService'
+import { useUserStore } from '@/store/modules/user'
 // import { getProjectApi, getDynamicApi, getTeamApi, getRadarApi } from '@/api/dashboard/workplace'
 import type { WorkplaceTotal, Project, Dynamic, Team } from '@/api/dashboard/workplace/types'
 import { set } from 'lodash-es'
 
 const loading = ref(true)
-
-// 获取统计数
+const TSMCPoint = ref(500)
+const userStore = useUserStore()
 const totalSate = reactive<WorkplaceTotal>({
   project: 10,
   access: 10,
   todo: 10
 })
 
+onMounted(async () => {
+  const useraccount = userStore.getUserInfo
+  if (useraccount) {
+    const userInformation = await userInfoService.userInfoApi(useraccount.username)
+    TSMCPoint.value = userInformation.points
+  }
+})
 const projects = reactive<Project[]>([])
 
 // 获取项目数
 
 // 获取动态
-
 
 const dynamics = reactive<Dynamic[]>([
   {
@@ -236,36 +243,31 @@ const { t } = useI18n()
       </ElCard>
     </ElCol>
     <ElCol :xl="8" :lg="8" :md="24" :sm="24" :xs="24" class="mb-20px">
-      <ElCard shadow="never">
-        <template #header>
-          <span>{{ t('workplace.shortcutOperation') }}</span>
-        </template>
-        <ElSkeleton :loading="loading" animated>
-          <ElRow>
-            <ElCol
-              v-for="item in 9"
-              :key="`card-${item}`"
-              :xl="12"
-              :lg="12"
-              :md="12"
-              :sm="24"
-              :xs="24"
-              class="mb-10px"
-            >
-              <ElLink type="default" :underline="false">
-                {{ t('workplace.operation') }}{{ item }}
-              </ElLink>
-            </ElCol>
-          </ElRow>
-        </ElSkeleton>
-      </ElCard>
-
-      <ElCard shadow="never" class="mt-20px">
-        <template #header>
-          <span>xx{{ t('workplace.index') }}</span>
-        </template>
-        <ElSkeleton :loading="loading" animated>
-          <Echart :options="radarOptionData" :height="400" />
+      <ElCard shadow="hover" class="mb-20px">
+        <ElSkeleton :loading="loading" animated :rows="2">
+          <template #default>
+            <div :class="`${prefixCls}__item flex justify-between`">
+              <div>
+                <div
+                  :class="`${prefixCls}__item--icon ${prefixCls}__item--peoples p-16px inline-block rounded-6px`"
+                >
+                  <Icon icon="svg-icon:shopping" :size="40" />
+                </div>
+              </div>
+              <div class="flex flex-col justify-between">
+                <div
+                  :class="`${prefixCls}__item--text text-16px font-700 text-black-500 text-right`"
+                  >{{ t('analysis.transactionAmount') }}</div
+                >
+                <CountTo
+                  class="text-20px font-700 text-right"
+                  :start-val="0"
+                  :end-val="TSMCPoint"
+                  :duration="1000"
+                />
+              </div>
+            </div>
+          </template>
         </ElSkeleton>
       </ElCard>
 
@@ -289,3 +291,48 @@ const { t } = useI18n()
     </ElCol>
   </ElRow>
 </template>
+
+<style lang="less" scoped>
+@prefix-cls: ~'@{adminNamespace}-panel';
+
+.@{prefix-cls} {
+  &__item {
+    &--peoples {
+      color: #40c9c6;
+    }
+
+    &--message {
+      color: #36a3f7;
+    }
+
+    &--money {
+      color: #f4516c;
+    }
+
+    &--shopping {
+      color: #34bfa3;
+    }
+
+    &:hover {
+      :deep(.@{adminNamespace}-icon) {
+        color: #fff !important;
+      }
+      .@{prefix-cls}__item--icon {
+        transition: all 0.38s ease-out;
+      }
+      .@{prefix-cls}__item--peoples {
+        background: #40c9c6;
+      }
+      .@{prefix-cls}__item--message {
+        background: #36a3f7;
+      }
+      .@{prefix-cls}__item--money {
+        background: #f4516c;
+      }
+      .@{prefix-cls}__item--shopping {
+        background: #34bfa3;
+      }
+    }
+  }
+}
+</style>
