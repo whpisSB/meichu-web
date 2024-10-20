@@ -113,11 +113,6 @@ const schema = reactive<FormSchema[]>([
                   {t('login.login')}
                 </BaseButton>
               </div>
-              <div class="w-[100%] mt-15px">
-                <button class="w-[100%]" onClick={testPing}>
-                  {t('login.register')}
-                </button>
-              </div>
             </>
           )
         }

@@ -218,7 +218,7 @@ const userStore = useUserStore()
       <template #content-footer="item">
         <div>
           <div class="flex-1 text-center" @click="() => actionClick(item)">
-            <ElLink :underline="false">加入購物車</ElLink>
+            <ElLink :underline="false">立即購買</ElLink>
           </div>
         </div>
       </template>

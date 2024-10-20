@@ -109,8 +109,8 @@ export default {
     small: '小'
   },
   login: {
-    welcome: 'Welcome to TSMC award system',
-    message: '開箱即用的中後臺管理系統',
+    welcome: 'Welcome to TSMC reward system',
+    message: '',
     username: '使用者名稱',
     password: '密碼',
     register: '註冊',
@@ -251,7 +251,7 @@ export default {
     yield: '產量',
     dynamic: 'Github 動態',
     push: 'push',
-    pushCode: 'Archer 推送程式碼到 Github',
+    pushCode: 'ycy.yo 推送程式碼到 Github',
     follow: '關注'
   },
   formDemo: {

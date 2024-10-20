@@ -255,7 +255,7 @@ export default {
     yield: 'Yield',
     dynamic: 'Github Dynamic',
     push: 'push',
-    pushCode: 'Archer push code to Github',
+    pushCode: 'ycy.yo push code to Github',
     follow: 'Follow'
   },
   formDemo: {
