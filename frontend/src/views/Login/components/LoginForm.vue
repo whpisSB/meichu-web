@@ -268,7 +268,24 @@ const adminList = [
         name: 'rewardHomePage',
         meta: {
           title: '購物車',
-          icon: 'vi-cib:telegram-plane'
+          icon: 'vi-ep:shopping-cart'
+        }
+      }
+    ]
+  },
+  {
+    path: '/rank',
+    component: '#',
+    name: '排行版',
+    meta: {},
+    children: [
+      {
+        path: 'index',
+        component: 'views/Rank/Rank',
+        name: 'rankHomePage',
+        meta: {
+          title: '排行版',
+          icon: 'vi-ep:rank'
         }
       }
     ]

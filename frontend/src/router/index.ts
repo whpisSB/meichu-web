@@ -124,7 +124,24 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'rewardHomePgge',
         meta: {
           title: t('router.guide'),
-          icon: 'vi-cib:telegram-plane'
+          icon: 'vi-ep:shopping-cart'
+        }
+      }
+    ]
+  },
+  {
+    path: '/rank',
+    component: '#',
+    name: 'Rank',
+    meta: {},
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/Rank/Rank.vue'),
+        name: 'rankHomePage',
+        meta: {
+          title: '排行版',
+          icon: 'vi-ep:rank'
         }
       }
     ]
